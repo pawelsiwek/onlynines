@@ -1,0 +1,102 @@
+@page "/nines/{Value}"
+@using System.Globalization
+@inject DatasetProvider Dataset
+
+@if (_sla is null)
+{
+    <PageTitle>Not a nine — OnlyNines</PageTitle>
+    <SiteNav />
+    <div class="page-shell">
+        <span class="mono-eyebrow">// 404</span>
+        <h1 class="page-title">That's not a nine we count.</h1>
+        <p class="page-sub">Try one of: @string.Join(" · ", Canonical.Keys)</p>
+    </div>
+}
+else
+{
+    var sla = _sla.Value;
+    <PageTitle>@Value% uptime — how much downtime is that? — OnlyNines</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@Value% availability allows @Fmt(DowntimePerYear) of downtime per year — @Fmt(DowntimePerYear / 12) per month, @Fmt(DowntimePerYear / 52) per week. See what it takes to reach the next nine on Azure." />
+        <link rel="canonical" href="https://onlynines.app/nines/@Value" />
+    </HeadContent>
+    <SiteNav />
+    <div class="page-shell">
+        <span class="mono-eyebrow">// how much downtime is</span>
+        <h1 class="page-title">@Value% uptime = @Fmt(DowntimePerYear) down per year.</h1>
+        <p class="page-sub">
+            That's @Availability.Nines(sla).ToString("F1", CultureInfo.InvariantCulture) nines.
+            Allowed downtime at @Value% availability:
+        </p>
+
+        <div class="rp-card">
+            <div class="sla-variant-row"><span class="wl-chip">per year</span><span class="sla-value">@Fmt(DowntimePerYear)</span></div>
+            <div class="sla-variant-row"><span class="wl-chip">per month</span><span class="sla-value">@Fmt(DowntimePerYear / 12)</span></div>
+            <div class="sla-variant-row"><span class="wl-chip">per week</span><span class="sla-value">@Fmt(DowntimePerYear / 52)</span></div>
+            <div class="sla-variant-row"><span class="wl-chip">per day</span><span class="sla-value">@Fmt(DowntimePerYear / 365)</span></div>
+        </div>
+
+        <div class="rp-card">
+            <div class="rp-card-heading">
+                <h2>The neighborhood</h2>
+                <span class="mono-muted">what one more nine buys you</span>
+            </div>
+            @foreach (var (label, s) in Canonical)
+            {
+                <div class="sla-variant-row">
+                    @if (label == Value)
+                    {
+                        <span class="wl-chip">@label% ← you are here</span>
+                    }
+                    else
+                    {
+                        <a class="wl-chip" href="/nines/@label">@label%</a>
+                    }
+                    <span class="sla-value">@Fmt((1 - s) * Availability.HoursPerYear)/yr</span>
+                </div>
+            }
+        </div>
+
+        <p class="page-sub">
+            Azure services live at specific rungs of this ladder — see the
+            <a class="accent" href="/sla">SLA dataset</a>, or
+            <a class="accent" href="/assess">compute the composite for your whole environment</a>
+            from one Resource Graph query.
+        </p>
+
+        <div class="rp-footnote"><span class="accent">ⓘ</span> Designed availability, not a guarantee.</div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Value { get; set; } = "";
+
+    // Canonical "nines" pages — the SEO corpus. Keys are the URL segments.
+    private static readonly Dictionary<string, double> Canonical = new()
+    {
+        ["90"] = 0.90,
+        ["99"] = 0.99,
+        ["99.5"] = 0.995,
+        ["99.9"] = 0.999,
+        ["99.95"] = 0.9995,
+        ["99.99"] = 0.9999,
+        ["99.995"] = 0.99995,
+        ["99.999"] = 0.99999,
+    };
+
+    public static IEnumerable<string> AllValues => Canonical.Keys;
+
+    private double? _sla;
+    private double DowntimePerYear => (1 - _sla!.Value) * Availability.HoursPerYear;
+
+    protected override void OnParametersSet() =>
+        _sla = Canonical.TryGetValue(Value, out var s) ? s : null;
+
+    private static string Fmt(double hours) => hours switch
+    {
+        >= 48 => $"{hours / 24:F1} days",
+        >= 1 => $"{hours:F1} h",
+        >= 1.0 / 60 => $"{hours * 60:F1} min",
+        _ => $"{hours * 3600:F0} s",
+    };
+}

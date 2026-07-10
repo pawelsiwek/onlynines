@@ -417,6 +417,18 @@ h1, h2, p { margin: 0; }
 .rp-group-name { flex: 1; font-family: var(--mono); font-weight: 500; font-size: 14px; }
 .rp-group-figures { display: flex; gap: 16px; align-items: baseline; }
 .rp-group-body { padding: 4px 0 12px 20px; }
+.verdict {
+    margin-top: 16px; border-radius: 14px; padding: 16px 18px; font-size: 14.5px; line-height: 1.55;
+    display: flex; flex-direction: column; gap: 4px;
+}
+.verdict strong { font-family: var(--mono); font-size: 13px; letter-spacing: 0.5px; }
+.verdict-ontarget { background: #EDFAF3; border: 1px solid #BFE8D2; color: #14532D; }
+.verdict-under { background: var(--tint-bg); border: 1px solid var(--tint-border); color: #0C4A6E; }
+.verdict-over { background: #FFF7ED; border: 1px solid #FED7AA; color: #7C2D12; }
+.verdict-unreachable { background: #FFF4F0; border: 1px solid #FFD6C9; color: #9A3412; }
+.verdict-list { margin-top: 14px; }
+.verdict-list-title { font-weight: 700; font-size: 13.5px; margin-bottom: 6px; }
+.verdict-beyond { font-size: 12.5px; color: var(--muted); margin-top: 10px; font-style: italic; }
 .rp-na { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; font-size: 13px; }
 .rp-na .ub-tag { cursor: help; }
 .rp-methodology-link { text-align: center; margin: 28px 0; }

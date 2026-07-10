@@ -58,16 +58,19 @@ public sealed record ScoredResource(AzureResource Resource, SlaService? Service,
         Variant is null ? 0 : (1 - Variant.Sla) * Availability.HoursPerYear;
 
     /// <summary>Next rung on the service ladder, if any.</summary>
-    public SlaVariant? NextRung
+    public SlaVariant? NextRung => RungAt(+1);
+
+    /// <summary>Previous rung — the "you can downgrade to this" candidate.</summary>
+    public SlaVariant? PrevRung => RungAt(-1);
+
+    private SlaVariant? RungAt(int offset)
     {
-        get
-        {
-            if (Service is null || Variant is null) return null;
-            var idx = Service.Ladder.IndexOf(Variant.Id);
-            if (idx < 0 || idx + 1 >= Service.Ladder.Count) return null;
-            var nextId = Service.Ladder[idx + 1];
-            return Service.Variants.FirstOrDefault(v => v.Id == nextId);
-        }
+        if (Service is null || Variant is null) return null;
+        var idx = Service.Ladder.IndexOf(Variant.Id);
+        if (idx < 0) return null;
+        var target = idx + offset;
+        if (target < 0 || target >= Service.Ladder.Count) return null;
+        return Service.Variants.FirstOrDefault(v => v.Id == Service.Ladder[target]);
     }
 }
 

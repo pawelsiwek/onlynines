@@ -10,6 +10,8 @@
     var envGauge = (Math.Clamp((Availability.Nines(envSla) - 1) / 4.0, 0, 1) * 100)
         .ToString("F1", CultureInfo.InvariantCulture);
     var topWeakest = scored.OrderByDescending(m => m.DowntimeHoursPerYear).Take(5).ToList();
+    var crit = Criticality.Get(_criticalityId);
+    var plan = TargetPlanner.Plan(scored, crit.TargetSla);
     var unknown = Groups.SelectMany(g => g.Unknown).ToList();
     var notApplicable = Groups.SelectMany(g => g.NotApplicable).ToList();
 }
@@ -49,12 +51,90 @@
                 <button class="btn-primary rp-save-btn" @onclick="SaveStack" disabled="@_saving">@(_saving ? "Saving…" : "Save → permalink + live badge")</button>
                 <span class="rp-share-hint">saves the inventory you pasted; the report re-scores on every visit</span>
             }
+            else if (Store.Enabled)
+            {
+                <span class="rp-share-hint"><a class="accent" href="/assess">run your own assessment</a> to save &amp; get a live badge</span>
+            }
             else
             {
                 <span class="rp-share-hint">deploy with a database to enable permalinks &amp; live badges</span>
             }
         </div>
     </div>
+</div>
+
+<!-- ============ WAF verdict: does raising the nines even make sense? ============ -->
+<div class="rp-card">
+    <div class="rp-card-heading">
+        <h2>How critical is this workload?</h2>
+        <span class="mono-muted"><a class="accent" href="https://learn.microsoft.com/azure/well-architected/reliability/metrics" target="_blank" rel="noopener">WAF: define reliability targets ↗</a></span>
+    </div>
+    <div class="seg-tabs">
+        @foreach (var c in Criticality.Classes)
+        {
+            <button class="seg-tab @(c.Id == crit.Id ? "seg-tab-active" : "")"
+                    title="@c.Blurb"
+                    @onclick="() => _criticalityId = c.Id">@c.Label · @((c.TargetSla * 100).ToString("G", CultureInfo.InvariantCulture))%</button>
+        }
+    </div>
+
+    <div class="verdict verdict-@plan.Verdict.ToString().ToLowerInvariant()">
+        @switch (plan.Verdict)
+        {
+            case TargetVerdict.OnTarget:
+                <strong>ON TARGET.</strong>
+                <span>@((plan.CurrentSla * 100).ToString("F3", CultureInfo.InvariantCulture))% meets the @crit.Label target. Don't touch it — every further nine is a vanity metric you'll pay for monthly.</span>
+                break;
+            case TargetVerdict.Under:
+                <strong>UNDER TARGET.</strong>
+                <span>You're @(((crit.TargetSla - plan.CurrentSla) * 100).ToString("F3", CultureInfo.InvariantCulture)) points short. The @plan.NeededUpgrades.Count upgrade(s) below get you to @((plan.SlaAfterNeeded * 100).ToString("F3", CultureInfo.InvariantCulture))% — and that's where you should stop.</span>
+                break;
+            case TargetVerdict.Over:
+                <strong>OVER-ENGINEERED.</strong>
+                <span>You're above the @crit.Label target with room to spare. @plan.DowngradeCandidates.Count resource(s) below can step down a tier — same verdict, smaller bill.</span>
+                break;
+            case TargetVerdict.Unreachable:
+                <strong>TARGET UNREACHABLE WITH TIER UPGRADES.</strong>
+                <span>Even maxing every ladder gets you to @((plan.SlaAfterNeeded * 100).ToString("F3", CultureInfo.InvariantCulture))%. This target needs architecture, not tiers: redundant sets across zones, multi-region. <a class="accent" href="https://learn.microsoft.com/azure/well-architected/reliability/redundancy" target="_blank" rel="noopener">WAF: redundancy ↗</a></span>
+                break;
+        }
+    </div>
+
+    @if (plan.Verdict is TargetVerdict.Under or TargetVerdict.Unreachable && plan.NeededUpgrades.Count > 0)
+    {
+        <div class="verdict-list">
+            <div class="verdict-list-title">Worth doing (in this order):</div>
+            @foreach (var m in plan.NeededUpgrades)
+            {
+                <div class="sla-variant-row">
+                    <span class="wl-chip">@(m.Resource.Name ?? m.Resource.Id)</span>
+                    <span class="mono-muted">@m.Variant!.Id →</span>
+                    <span class="sla-value">@m.NextRung!.Id</span>
+                    <span class="rp-delta">−@(((m.NextRung!.Sla - m.Variant!.Sla) * Availability.HoursPerYear).ToString("F1", CultureInfo.InvariantCulture)) h/yr</span>
+                </div>
+            }
+            @if (plan.BeyondTarget.Count > 0)
+            {
+                <div class="verdict-beyond">@plan.BeyondTarget.Count more upgrade(s) possible — your target doesn't justify them.</div>
+            }
+        </div>
+    }
+
+    @if (plan.Verdict == TargetVerdict.Over)
+    {
+        <div class="verdict-list">
+            <div class="verdict-list-title">Downgrade candidates (each independently keeps the target):</div>
+            @foreach (var m in plan.DowngradeCandidates)
+            {
+                <div class="sla-variant-row">
+                    <span class="wl-chip">@(m.Resource.Name ?? m.Resource.Id)</span>
+                    <span class="mono-muted">@m.Variant!.Id →</span>
+                    <span class="sla-value">@m.PrevRung!.Id</span>
+                    <span class="mono-muted">@(m.PrevRung!.UpgradeNote is null ? "" : m.PrevRung!.UpgradeNote)</span>
+                </div>
+            }
+        </div>
+    }
 </div>
 
 <!-- ============ Top weakest links, whole environment ============ -->
@@ -80,7 +160,7 @@
                         @if (w.NextRung is { } next)
                         {
                             <span class="wl-chip">@next.Id</span>
-                            <span class="rp-delta">+@(((next.Sla - w.Variant!.Sla) * 100).ToString("F2", CultureInfo.InvariantCulture))%</span>
+                            <span class="rp-delta">−@(((next.Sla - w.Variant!.Sla) * Availability.HoursPerYear).ToString("F1", CultureInfo.InvariantCulture)) h/yr</span>
                         }
                         else
                         {
@@ -189,9 +269,16 @@
     /// <summary>Set when rendering an already-saved stack (shows share actions instead of save).</summary>
     [Parameter] public string? SavedSlug { get; set; }
 
+    /// <summary>Criticality preselected from a saved stack.</summary>
+    [Parameter] public string? InitialCriticality { get; set; }
+
     private bool _saving;
+    private string? _criticalityId;
     private string _copyPermalinkLabel = "Copy permalink";
     private string _copyBadgeLabel = "Copy badge markdown";
+
+    protected override void OnParametersSet() =>
+        _criticalityId ??= InitialCriticality;
 
     private string PermalinkUrl => $"{Nav.BaseUri.TrimEnd('/')}/stack/{SavedSlug}";
     private string BadgeMarkdown =>
@@ -201,7 +288,7 @@
     {
         if (RawInput is null) return;
         _saving = true;
-        var slug = await Store.SaveAsync(RawInput);
+        var slug = await Store.SaveAsync(new StackPayload(RawInput, _criticalityId).Wrap());
         Nav.NavigateTo($"/stack/{slug}");
     }
 

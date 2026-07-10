@@ -14,4 +14,6 @@ variants:
     match: {}
     sla: 0.999
     upgradeNote: Assumes Premium SSD / Ultra disk. Standard HDD single VM carries a lower SLA — verify.
-ladder: [single-premium-disk, zonal-single]
+# No ladder on purpose: a single VM's real upgrade is a redundant SET across zones
+# (99.99% as a set), which per-resource scoring can't express. See upgradeNote.
+ladder: []

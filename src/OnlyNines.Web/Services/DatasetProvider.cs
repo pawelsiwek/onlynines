@@ -19,6 +19,13 @@ public sealed class DatasetProvider
         Scorer = new Scorer(Services);
     }
 
+    /// <summary>URL slug for a service's SEO page, e.g. "azure-app-service".</summary>
+    public static string SlugFor(OnlyNines.Core.SlaService s) =>
+        string.Join("-", s.Service.ToLowerInvariant()
+            .Where(c => char.IsLetterOrDigit(c) || c == ' ')
+            .Aggregate("", (acc, c) => acc + c)
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries));
+
     private static string? Find(string start)
     {
         var dir = new DirectoryInfo(start);

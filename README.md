@@ -1,6 +1,6 @@
 # OnlyNines
 
-[![OnlyNines](https://onlynines-ulvuyaht566yk.azurewebsites.net/badge/q0wd42nn3i.svg)](https://onlynines-ulvuyaht566yk.azurewebsites.net/stack/q0wd42nn3i)
+[![OnlyNines](https://onlynines.app/badge/q0wd42nn3i.svg)](https://onlynines.app/stack/q0wd42nn3i)
 [![ci](https://github.com/pawelsiwek/onlynines/actions/workflows/ci.yml/badge.svg)](https://github.com/pawelsiwek/onlynines/actions/workflows/ci.yml)
 
 > **we only count nines** · [onlynines.app](https://onlynines.app)
@@ -51,14 +51,19 @@ Run the web app locally: `dotnet run --project src/OnlyNines.Web`
 
 SLA values in `data/sla/` are drafts pending verification against the [current Microsoft SLA documents](https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services). Every file carries a `lastVerified` date; PRs updating values with a source link are the most welcome contribution.
 
-## Roadmap
+## What's here
 
-- [x] M1 — scoring engine + dataset + CLI
-- [x] M2 — Blazor web app: calculator + paste-JSON/CSV assessment
-- [x] M3 — hosted onlynines.app: saved stacks, permalinks, live README badges, bicep + GitHub Actions deploy
-- [ ] M3.5 — move assess/calculator to WebAssembly so "runs in your browser" is literally true
-- [ ] M4 — SEO corpus: per-service SLA pages, downtime tables, external uptime on /status
-- [ ] M5 — dataset verification pass + launch
+- **Assessment** ([/assess](https://onlynines.app/assess)) — paste one Resource Graph export (JSON or CSV), get the composite SLA of your environment, weakest links ranked by downtime cost, and an honest unknown bucket.
+- **Criticality verdict** — declare how critical the workload is (Well-Architected style) and get one of: *under target* (with the shortest upgrade list that gets you there — and where to stop), *on target* (don't touch it), or *over-engineered* (what you can downgrade without breaking the target).
+- **Permalinks & live badges** — save an assessment, embed `![OnlyNines](https://onlynines.app/badge/<slug>.svg)` in your README; reports re-score against the current dataset on every visit.
+- **Calculator** ([/calculator](https://onlynines.app/calculator)), **SLA dataset browser** ([/sla](https://onlynines.app/sla)), downtime tables per nine ([/nines/99.9](https://onlynines.app/nines/99.9)).
+- **Infra as code** — `infra/` provisions the deliberately-cheap production (App Service B1 + PostgreSQL Burstable, no HA — on purpose) via bicep + GitHub Actions OIDC.
+
+## Next
+
+- WebAssembly for assess/calculator, so "runs in your browser" is literally true
+- External uptime monitoring + chaos-kill history on [/status](https://onlynines.app/status)
+- Dataset verification pass against current Microsoft SLA documents (values are drafts)
 
 ## License
 

@@ -24,7 +24,7 @@
                 <h1>The nines, on the record.</h1>
                 <p>Re-scored against the current SLA dataset on every visit — this report doesn't go stale.</p>
             </div>
-            <ReportView Groups="_groups" SavedSlug="@Slug" />
+            <ReportView Groups="_groups" SavedSlug="@Slug" InitialCriticality="@_criticality" />
         }
     </div>
 </div>
@@ -34,14 +34,17 @@
 
     private IReadOnlyList<GroupScore>? _groups;
     private bool _notFound;
+    private string? _criticality;
 
     protected override async Task OnInitializedAsync()
     {
-        var payload = await Store.GetAsync(Slug);
-        if (payload is null) { _notFound = true; return; }
+        var raw = await Store.GetAsync(Slug);
+        if (raw is null) { _notFound = true; return; }
         try
         {
-            _groups = Dataset.Scorer.ScoreEnvironment(ResourceGraphParser.Parse(payload));
+            var payload = StackPayload.Unwrap(raw);
+            _criticality = payload.Criticality;
+            _groups = Dataset.Scorer.ScoreEnvironment(ResourceGraphParser.Parse(payload.Input));
         }
         catch
         {
