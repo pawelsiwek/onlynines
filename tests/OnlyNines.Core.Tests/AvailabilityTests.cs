@@ -36,6 +36,18 @@ public class AvailabilityTests
         Assert.Equal(0, Availability.Parallel(Array.Empty<double>()), 10);
     }
 
+    // Regression: SQL DB zone-redundant (99.995%) displayed as "100.00%" with F2.
+    // Nothing on this site may ever say 100%.
+    [Theory]
+    [InlineData(0.99995, "99.995")]
+    [InlineData(0.9999999, "99.99999")]
+    [InlineData(0.9995, "99.95")]
+    [InlineData(0.999, "99.9")]
+    public void Percent_NeverRoundsUpTo100(double sla, string expected)
+    {
+        Assert.Equal(expected, Availability.Percent(sla));
+    }
+
     [Theory]
     [InlineData(0.999, 3.0)]
     [InlineData(0.9995, 3.3)]

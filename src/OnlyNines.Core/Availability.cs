@@ -21,4 +21,17 @@ public static class Availability
     /// <summary>"How many nines" — 0.9995 → 3.3. Because we only count nines.</summary>
     public static double Nines(double sla) =>
         sla >= 1 ? double.PositiveInfinity : -Math.Log10(1 - sla);
+
+    /// <summary>
+    /// Display formatting that never lies: adds precision instead of rounding
+    /// an SLA below 1.0 up to "100". Nothing on this site may ever say 100%.
+    /// </summary>
+    public static string Percent(double sla)
+    {
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        var text = (sla * 100).ToString("0.###", ci);
+        if (sla < 1 && text.StartsWith("100"))
+            text = (sla * 100).ToString("0.######", ci);
+        return text;
+    }
 }

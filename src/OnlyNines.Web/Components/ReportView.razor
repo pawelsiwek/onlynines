@@ -41,7 +41,7 @@
         </div>
         <div class="rp-share">
             <span class="rp-share-label">README BADGE</span>
-            <span class="uptime-badge"><span class="ub-left">OnlyNines</span><span class="ub-right">@((envSla * 100).ToString("F2", CultureInfo.InvariantCulture))%</span></span>
+            <span class="uptime-badge"><span class="ub-left">OnlyNines</span><span class="ub-right">@(Availability.Percent(envSla))%</span></span>
             @if (SavedSlug is not null)
             {
                 <button class="copy-quiet rp-share-btn" @onclick="() => CopyText(PermalinkUrl)">⧉ @_copyPermalinkLabel</button>
@@ -50,7 +50,10 @@
             else if (Store.Enabled && RawInput is not null)
             {
                 <button class="btn-primary rp-save-btn" @onclick="SaveStack" disabled="@_saving">@(_saving ? "Saving…" : "Save → permalink + live badge")</button>
-                <span class="rp-share-hint">saves the inventory you pasted; the report re-scores on every visit</span>
+                <label class="rp-anon">
+                    <input type="checkbox" @bind="_anonymizeOnSave" />
+                    anonymize names <span class="rp-anon-hint">(recommended — permalinks are public)</span>
+                </label>
             }
             else if (Store.Enabled)
             {
@@ -274,6 +277,7 @@
     [Parameter] public string? InitialCriticality { get; set; }
 
     private bool _saving;
+    private bool _anonymizeOnSave = true; // public links leak topology — safe by default
     private string? _criticalityId;
     private string _copyPermalinkLabel = "Copy permalink";
     private string _copyBadgeLabel = "Copy badge markdown";
@@ -289,7 +293,10 @@
     {
         if (RawInput is null) return;
         _saving = true;
-        var slug = await Store.SaveAsync(new StackPayload(RawInput, _criticalityId).Wrap());
+        var input = _anonymizeOnSave
+            ? InventoryAnonymizer.Anonymize(Groups.SelectMany(g => g.Members).Select(m => m.Resource))
+            : RawInput;
+        var slug = await Store.SaveAsync(new StackPayload(input, _criticalityId).Wrap());
         Telemetry.StacksSaved.Add(1);
         _ = Counters.IncrementAsync("stack_saved");
         Nav.NavigateTo($"/stack/{slug}");

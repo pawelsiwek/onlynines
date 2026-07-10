@@ -9,7 +9,7 @@ public static class BadgeSvg
     public static string Render(double sla)
     {
         var nines = Availability.Nines(sla);
-        var value = (sla * 100).ToString("F2", CultureInfo.InvariantCulture) + "%";
+        var value = Availability.Percent(sla) + "%";
         var color = nines >= 4 ? "#1F8A5B" // strong — rare on purpose
                   : nines < 2.5 ? "#FF6B4A" // weak — the coral of shame
                   : "#00AFF0";

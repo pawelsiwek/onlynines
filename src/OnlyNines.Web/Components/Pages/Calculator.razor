@@ -55,7 +55,7 @@
                         @onchange="e => OnVariantChanged(idx, e)">
                     @foreach (var v in service.Variants)
                     {
-                        <option value="@v.Id">@v.Id — @((v.Sla * 100).ToString("F2", CultureInfo.InvariantCulture))%</option>
+                        <option value="@v.Id">@v.Id — @(Availability.Percent(v.Sla))%</option>
                     }
                 </select>
                 <button class="calc-remove" title="Remove" @onclick="() => _rows.RemoveAt(idx)">✕</button>
