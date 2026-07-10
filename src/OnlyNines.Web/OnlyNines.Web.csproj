@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OnlyNines.Core\OnlyNines.Core.csproj" />
     <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

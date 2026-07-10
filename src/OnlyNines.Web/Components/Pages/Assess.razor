@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject DatasetProvider Dataset
 @inject KqlProvider Kql
+@inject UsageCounters Counters
 @inject IJSRuntime Js
 
 <PageTitle>Assess your environment — OnlyNines</PageTitle>
@@ -179,6 +180,8 @@
             var resources = ResourceGraphParser.Parse(Input);
             if (resources.Count == 0) { Error = "Parsed 0 resources — is this the right export?"; return; }
             Groups = Dataset.Scorer.ScoreEnvironment(resources);
+            Telemetry.AssessmentsRun.Add(1);
+            _ = Counters.IncrementAsync("assess_run");
         }
         catch (Exception ex)
         {

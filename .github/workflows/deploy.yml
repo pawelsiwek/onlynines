@@ -51,6 +51,7 @@ jobs:
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/main.bicep \
             --parameters pgPassword="${{ secrets.PG_PASSWORD }}" \
+            --parameters cfAnalyticsToken="${{ secrets.CF_ANALYTICS_TOKEN }}" \
             --query 'properties.outputs' -o json)
           echo "webAppName=$(echo "$out" | jq -r .webAppName.value)" >> "$GITHUB_OUTPUT"
           echo "webAppHost=$(echo "$out" | jq -r .webAppHost.value)" >> "$GITHUB_OUTPUT"

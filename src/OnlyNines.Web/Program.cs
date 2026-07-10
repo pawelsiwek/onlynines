@@ -1,12 +1,23 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using OnlyNines.Web.Components;
 using OnlyNines.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// OTEL, vendor-neutral: Azure Monitor is just the current exporter. Swapping to any
+// OTLP backend later means changing THIS block only — instrumentation stays put.
+if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+{
+    builder.Services.AddOpenTelemetry()
+        .UseAzureMonitor()
+        .WithMetrics(metrics => metrics.AddMeter(Telemetry.MeterName));
+}
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<DatasetProvider>();
 builder.Services.AddSingleton<KqlProvider>();
 builder.Services.AddSingleton<StackStore>();
+builder.Services.AddSingleton<UsageCounters>();
 
 var app = builder.Build();
 
@@ -40,10 +51,12 @@ app.MapGet("/sitemap.xml", (OnlyNines.Web.Services.DatasetProvider dataset) =>
 
 // README badge: the 24/7 traffic + backlink engine. Recomputed per request so it
 // tracks dataset updates; cached at the edge for an hour.
-app.MapGet("/badge/{slug}.svg", async (string slug, StackStore store, OnlyNines.Web.Services.DatasetProvider dataset, HttpContext http) =>
+app.MapGet("/badge/{slug}.svg", async (string slug, StackStore store, OnlyNines.Web.Services.DatasetProvider dataset, UsageCounters counters, HttpContext http) =>
 {
     var payload = await store.GetAsync(slug);
     if (payload is null) return Results.NotFound();
+    OnlyNines.Web.Services.Telemetry.BadgesServed.Add(1);
+    _ = counters.IncrementAsync("badge_served");
 
     double sla;
     try

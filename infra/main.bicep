@@ -21,6 +21,12 @@ param budgetAmount int = 60
 @description('Where budget alerts land')
 param alertEmail string = 'pawelsiwek@gmail.com'
 
+@description('Cloudflare Web Analytics beacon token (empty = beacon disabled)')
+param cfAnalyticsToken string = ''
+
+@description('Public URL pinged by the availability test')
+param publicUrl string = 'https://onlynines.app/'
+
 // ---------- App Service (B1, single instance, single zone — on purpose) ----------
 resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: '${appName}-plan'
@@ -54,6 +60,14 @@ resource web 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1'
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
+          name: 'CF_ANALYTICS_TOKEN'
+          value: cfAnalyticsToken
         }
       ]
     }
@@ -97,6 +111,96 @@ resource pgFirewallAzure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRule
   properties: {
     startIpAddress: '0.0.0.0'
     endIpAddress: '0.0.0.0'
+  }
+}
+
+// ---------- Observability: OTEL -> Azure Monitor (free tier covers this app 100x over) ----------
+resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: '${appName}-logs'
+  location: location
+  properties: {
+    sku: { name: 'PerGB2018' }
+    retentionInDays: 30
+  }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${appName}-insights'
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logs.id
+  }
+}
+
+// "Did it die?" — pinged from 3 regions every 5 minutes.
+resource ping 'Microsoft.Insights/webtests@2022-06-15' = {
+  name: '${appName}-ping'
+  location: location
+  tags: {
+    'hidden-link:${appInsights.id}': 'Resource'
+  }
+  properties: {
+    SyntheticMonitorId: '${appName}-ping'
+    Name: 'onlynines availability'
+    Enabled: true
+    Frequency: 300
+    Timeout: 30
+    Kind: 'standard'
+    RetryEnabled: true
+    Locations: [
+      { Id: 'emea-nl-ams-azr' }
+      { Id: 'emea-gb-db3-azr' }
+      { Id: 'us-va-ash-azr' }
+    ]
+    Request: {
+      RequestUrl: publicUrl
+      HttpVerb: 'GET'
+      ParseDependentRequests: false
+    }
+    ValidationRules: {
+      ExpectedHttpStatusCode: 200
+      SSLCheck: true
+      SSLCertRemainingLifetimeCheck: 7
+    }
+  }
+}
+
+resource alertGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
+  name: '${appName}-alerts'
+  location: 'Global'
+  properties: {
+    groupShortName: 'onlynines'
+    enabled: true
+    emailReceivers: [
+      {
+        name: 'owner'
+        emailAddress: alertEmail
+        useCommonAlertSchema: true
+      }
+    ]
+  }
+}
+
+resource availabilityAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
+  name: '${appName}-down'
+  location: 'global'
+  properties: {
+    severity: 1
+    enabled: true
+    scopes: [ping.id, appInsights.id]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT5M'
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria'
+      webTestId: ping.id
+      componentId: appInsights.id
+      failedLocationCount: 2
+    }
+    actions: [
+      { actionGroupId: alertGroup.id }
+    ]
   }
 }
 

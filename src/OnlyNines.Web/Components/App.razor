@@ -1,3 +1,4 @@
+@inject IConfiguration Config
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,6 +22,16 @@
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script src="js/site.js"></script>
+    @if (!string.IsNullOrEmpty(CfToken))
+    {
+        <!-- Cloudflare Web Analytics: cookie-less, no consent banner needed -->
+        <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+                data-cf-beacon="@($"{{\"token\": \"{CfToken}\"}}")"></script>
+    }
 </body>
 
 </html>
+
+@code {
+    private string? CfToken => Config["CF_ANALYTICS_TOKEN"];
+}

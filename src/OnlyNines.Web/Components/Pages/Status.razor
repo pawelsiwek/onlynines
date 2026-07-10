@@ -1,4 +1,5 @@
 @page "/status"
+@inject UsageCounters Counters
 
 <PageTitle>Status — OnlyNines</PageTitle>
 
@@ -15,6 +16,16 @@
 
     <div class="rp-card">
         <div class="rp-card-heading">
+            <h2>Usage, publicly</h2>
+            <span class="mono-muted">zero-PII counters, straight from our database</span>
+        </div>
+        <div class="sla-variant-row"><span class="wl-chip">assessments run</span><span class="sla-value">@Total("assess_run")</span></div>
+        <div class="sla-variant-row"><span class="wl-chip">stacks saved</span><span class="sla-value">@Total("stack_saved")</span></div>
+        <div class="sla-variant-row"><span class="wl-chip">badges served</span><span class="sla-value">@Total("badge_served")</span></div>
+    </div>
+
+    <div class="rp-card">
+        <div class="rp-card-heading">
             <h2>Chaos-kill history</h2>
             <span class="mono-muted">survived / died</span>
         </div>
@@ -24,5 +35,15 @@
         </p>
     </div>
 
-    <div class="rp-footnote"><span class="accent">ⓘ</span> External uptime monitoring badge lands here in M3 (measured from outside, so it survives our outages).</div>
+    <div class="rp-footnote"><span class="accent">ⓘ</span> External uptime monitoring badge lands here soon (measured from outside, so it survives our outages).</div>
 </div>
+
+@code {
+    private IReadOnlyDictionary<string, long> _totals = new Dictionary<string, long>();
+
+    protected override async Task OnInitializedAsync() =>
+        _totals = await Counters.TotalsAsync();
+
+    private string Total(string kind) =>
+        _totals.TryGetValue(kind, out var v) ? v.ToString("N0") : "0";
+}

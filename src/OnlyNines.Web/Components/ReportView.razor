@@ -1,6 +1,7 @@
 @using System.Globalization
 @inject IJSRuntime Js
 @inject StackStore Store
+@inject UsageCounters Counters
 @inject NavigationManager Nav
 
 @{
@@ -289,6 +290,8 @@
         if (RawInput is null) return;
         _saving = true;
         var slug = await Store.SaveAsync(new StackPayload(RawInput, _criticalityId).Wrap());
+        Telemetry.StacksSaved.Add(1);
+        _ = Counters.IncrementAsync("stack_saved");
         Nav.NavigateTo($"/stack/{slug}");
     }
 
