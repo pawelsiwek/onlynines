@@ -1,5 +1,6 @@
 # OnlyNines one-time bootstrap: resource group + GitHub OIDC federation + repo secrets.
 # Run once, locally, logged in to both `az` and `gh`. GitHub Actions handles everything after.
+# ASCII only - Windows PowerShell 5.1 chokes on UTF-8 without BOM.
 param(
     [string]$SubscriptionId = 'b531ce38-fac4-4b5b-aa57-09dac1d89b35',
     [string]$Repo = 'pawelsiwek/onlynines',
@@ -25,7 +26,7 @@ $fedParams = @{
     subject   = "repo:${Repo}:ref:refs/heads/main"
     audiences = @('api://AzureADTokenExchange')
 } | ConvertTo-Json -Compress
-$fedParams | Out-File -Encoding utf8 fed.json
+$fedParams | Out-File -Encoding ascii fed.json
 az ad app federated-credential create --id $app.id --parameters fed.json --output none 2>$null
 Remove-Item fed.json
 
@@ -45,4 +46,4 @@ gh secret set PG_PASSWORD           --repo $Repo --body $pgPassword
 
 Write-Host ""
 Write-Host "Done. Push to main (or run the 'deploy' workflow) and GitHub Actions will provision + deploy."
-Write-Host "PG password is stored ONLY as a GitHub secret — treat the repo secrets as the source of truth."
+Write-Host "PG password is stored ONLY as a GitHub secret - treat the repo secrets as the source of truth."

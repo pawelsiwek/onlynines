@@ -57,8 +57,6 @@ SLA values in `data/sla/` are drafts pending verification against the [current M
 - [ ] M4 — SEO corpus: per-service SLA pages, downtime tables, external uptime on /status
 - [ ] M5 — dataset verification pass + launch
 
-Built in public as the companion project of a conference-session series on agentic resiliency in Azure (Resiliency Agent, Chaos Studio). The hosted instance **is** the demo victim — check its scars at `/status`.
-
 ## License
 
 MIT © Paweł Siwek
