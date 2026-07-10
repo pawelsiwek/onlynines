@@ -1,5 +1,8 @@
 # OnlyNines
 
+[![OnlyNines](https://onlynines-ulvuyaht566yk.azurewebsites.net/badge/q0wd42nn3i.svg)](https://onlynines-ulvuyaht566yk.azurewebsites.net/stack/q0wd42nn3i)
+[![ci](https://github.com/pawelsiwek/onlynines/actions/workflows/ci.yml/badge.svg)](https://github.com/pawelsiwek/onlynines/actions/workflows/ci.yml)
+
 > **we only count nines** · [onlynines.app](https://onlynines.app)
 
 Composite SLA calculator + Azure environment assessment from **a single KQL query**. No login, no credentials, no agent.
