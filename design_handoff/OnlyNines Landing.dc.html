@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: #00AFF0; text-decoration: none; }
+  a:hover { color: #0090C8; }
+  ::selection { background: #00AFF0; color: #fff; }
+</style>
+</helmet>
+
+<div style="font-family: 'Poppins', system-ui, sans-serif; color: #0B1E33; background: #ffffff; overflow: hidden; width: 100%;">
+
+  <!-- NAV -->
+  <nav style="display: flex; align-items: center; justify-content: space-between; max-width: 1120px; margin: 0 auto; padding: 26px 32px;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 38px; height: 38px; border-radius: 11px; background: #00AFF0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,175,240,0.35); position: relative;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 22px; color: #fff; line-height: 1; letter-spacing: -1px;">9</span>
+        <span style="position: absolute; bottom: 7px; width: 4px; height: 8px; background: #00AFF0; border-radius: 0 0 2px 2px; left: 50%; transform: translateX(-50%) translateX(3px);"></span>
+      </div>
+      <span style="font-weight: 800; font-size: 21px; letter-spacing: -0.5px;">Only<span style="color: #00AFF0;">Nines</span></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 30px; font-size: 15px; font-weight: 500;">
+      <a href="#" style="color: #0B1E33;">Methodology</a>
+      <a href="#" style="color: #0B1E33;">GitHub</a>
+      <a href="#" style="background: #0B1E33; color: #fff; padding: 10px 20px; border-radius: 11px; font-weight: 600;" style-hover="background: #00AFF0; color: #fff; padding: 10px 20px; border-radius: 11px; font-weight: 600;">Assess my environment</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="max-width: 1120px; margin: 0 auto; padding: 64px 32px 40px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center;">
+    <div>
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: #F0FAFE; border: 1px solid #CDEEFB; color: #0090C8; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 26px;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: #1F8A5B; display: inline-block;"></span>
+        SLA calculator for Azure infrastructure
+      </div>
+      <h1 style="font-size: 60px; line-height: 1.02; font-weight: 800; letter-spacing: -2px; margin: 0 0 22px;">One query.<br>Your <span style="color: #00AFF0;">real</span> Azure SLA.</h1>
+      <p style="font-size: 19px; line-height: 1.5; color: #47586B; margin: 0 0 34px; max-width: 460px;">Compute the composite SLA of your entire Azure cloud environment — every VM, database and storage account — from a single Azure Resource Graph query. No login. No credentials. No agent. We only count nines.</p>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="#" style="background: #00AFF0; color: #fff; padding: 15px 26px; border-radius: 13px; font-weight: 700; font-size: 16px; box-shadow: 0 10px 24px rgba(0,175,240,0.32); display: inline-flex; align-items: center; gap: 9px;" style-hover="background: #0090C8; color: #fff; padding: 15px 26px; border-radius: 13px; font-weight: 700; font-size: 16px; box-shadow: 0 14px 30px rgba(0,175,240,0.42); display: inline-flex; align-items: center; gap: 9px; transform: translateY(-1px);">Show me your nines →</a>
+        <a href="#" style="color: #0B1E33; padding: 15px 22px; border-radius: 13px; font-weight: 600; font-size: 16px; border: 1.5px solid #E2E8F0;" style-hover="color: #00AFF0; padding: 15px 22px; border-radius: 13px; font-weight: 600; font-size: 16px; border: 1.5px solid #00AFF0;">Just give me the calculator</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 22px; margin-top: 34px; font-size: 13px; color: #8595A6; font-weight: 500;">
+        <span style="display: inline-flex; align-items: center; gap: 7px;"><span style="color: #1F8A5B; font-weight: 700;">✓</span> Runs in your browser</span>
+        <span style="display: inline-flex; align-items: center; gap: 7px;"><span style="color: #1F8A5B; font-weight: 700;">✓</span> Zero-trust by design</span>
+      </div>
+    </div>
+
+    <!-- HERO GAUGE CARD -->
+    <div style="background: #0B1E33; border-radius: 24px; padding: 34px; color: #fff; box-shadow: 0 30px 60px rgba(11,30,51,0.28); position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,175,240,0.35), transparent 70%);"></div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <span style="font-size: 13px; font-weight: 600; color: #8DA2B8; text-transform: uppercase; letter-spacing: 1px;">Composite SLA</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #00AFF0; background: rgba(0,175,240,0.14); padding: 4px 9px; border-radius: 6px;">azure · prod</span>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 66px; letter-spacing: -3px; line-height: 1; font-variant-numeric: tabular-nums;">99.750<span style="color: #00AFF0;">%</span></div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #8DA2B8; margin-top: 8px;">≈ 21.9 h/yr downtime budget</div>
+
+      <!-- gauge -->
+      <div style="margin-top: 30px;">
+        <div style="height: 12px; background: rgba(255,255,255,0.08); border-radius: 999px; position: relative;">
+          <div style="height: 12px; border-radius: 999px; background: linear-gradient(90deg, #00AFF0, #4FD0FF); width: {{ gaugeWidth }}; transition: width 1.5s cubic-bezier(0.22,1,0.36,1);"></div>
+          <div style="position: absolute; top: 50%; left: {{ gaugeWidth }}; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 4px solid #00AFF0; transform: translate(-50%,-50%); transition: left 1.5s cubic-bezier(0.22,1,0.36,1); box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5E7590; font-variant-numeric: tabular-nums;">
+          <span>9</span><span>99</span><span>99.9</span><span>99.99</span><span>99.999</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-STEP STRIP -->
+  <section style="max-width: 1120px; margin: 0 auto; padding: 56px 32px;">
+    <div style="text-align: center; margin-bottom: 44px;">
+      <h2 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0 0 10px;">Three steps to your Azure nines</h2>
+      <p style="font-size: 17px; color: #47586B; margin: 0;">Straight from Azure Resource Graph. No SDK. No pipeline. Paste, export, count.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px;">
+      <div style="border: 1.5px solid #EAF0F5; border-radius: 20px; padding: 28px;" style-hover="border: 1.5px solid #00AFF0; border-radius: 20px; padding: 28px; box-shadow: 0 16px 34px rgba(0,175,240,0.12);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; width: 34px; height: 34px; border-radius: 10px; background: #F0FAFE; color: #00AFF0; display: flex; align-items: center; justify-content: center;">01</span>
+          <span style="font-weight: 700; font-size: 17px;">Paste KQL</span>
+        </div>
+        <div style="background: #0B1E33; border-radius: 12px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.6; color: #A9C6E0;">
+          <div><span style="color: #4FD0FF;">resources</span></div>
+          <div><span style="color: #FF8A6E;">|</span> where type =~ <span style="color: #8FE0B0;">"microsoft.compute/..."</span></div>
+          <div><span style="color: #FF8A6E;">|</span> project name, sku, zones</div>
+        </div>
+      </div>
+      <div style="border: 1.5px solid #EAF0F5; border-radius: 20px; padding: 28px;" style-hover="border: 1.5px solid #00AFF0; border-radius: 20px; padding: 28px; box-shadow: 0 16px 34px rgba(0,175,240,0.12);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; width: 34px; height: 34px; border-radius: 10px; background: #F0FAFE; color: #00AFF0; display: flex; align-items: center; justify-content: center;">02</span>
+          <span style="font-weight: 700; font-size: 17px;">Export JSON</span>
+        </div>
+        <div style="background: #0B1E33; border-radius: 12px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.6; color: #A9C6E0;">
+          <div>[ {</div>
+          <div>&nbsp;&nbsp;<span style="color: #4FD0FF;">"name"</span>: <span style="color: #8FE0B0;">"vm-web-01"</span>,</div>
+          <div>&nbsp;&nbsp;<span style="color: #4FD0FF;">"zones"</span>: <span style="color: #FFB27A;">null</span> } ]</div>
+        </div>
+      </div>
+      <div style="border: 1.5px solid #EAF0F5; border-radius: 20px; padding: 28px;" style-hover="border: 1.5px solid #00AFF0; border-radius: 20px; padding: 28px; box-shadow: 0 16px 34px rgba(0,175,240,0.12);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; width: 34px; height: 34px; border-radius: 10px; background: #00AFF0; color: #fff; display: flex; align-items: center; justify-content: center;">03</span>
+          <span style="font-weight: 700; font-size: 17px;">Get your nines</span>
+        </div>
+        <div style="background: #F0FAFE; border: 1px solid #CDEEFB; border-radius: 12px; padding: 16px; display: flex; align-items: baseline; gap: 10px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 30px; color: #0B1E33; font-variant-numeric: tabular-nums;">99.750%</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #0090C8;">composite</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORT TEASER -->
+  <section style="background: #F5F9FC; padding: 72px 32px;">
+    <div style="max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 48px; align-items: center;">
+      <div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #0090C8; font-weight: 500;">// the report</span>
+        <h2 style="font-size: 36px; font-weight: 800; letter-spacing: -1px; margin: 12px 0 16px; line-height: 1.08;">See exactly which resource is dragging you down.</h2>
+        <p style="font-size: 17px; line-height: 1.55; color: #47586B; margin: 0 0 24px;">Every resource ranked by the downtime it costs you per year. The weakest link gets the coral. The upgrade path gets a chip. Nothing gets hidden.</p>
+        <a href="#" style="color: #00AFF0; font-weight: 700; font-size: 16px; display: inline-flex; align-items: center; gap: 7px;" style-hover="color: #0090C8; font-weight: 700; font-size: 16px; display: inline-flex; align-items: center; gap: 9px;">View a sample report →</a>
+      </div>
+
+      <!-- report card -->
+      <div style="background: #fff; border-radius: 22px; padding: 28px; box-shadow: 0 24px 50px rgba(11,30,51,0.10); border: 1px solid #EAF0F5;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <span style="font-weight: 700; font-size: 15px; color: #8595A6; text-transform: uppercase; letter-spacing: 0.5px;">Weakest links</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8595A6;">by h/yr cost</span>
+        </div>
+
+        <sc-for list="{{ links }}" as="row" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid #F0F4F8;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 14px; color: #0B1E33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ row.name }}</div>
+              <div style="font-size: 12px; color: #8595A6; margin-top: 3px;">{{ row.tier }}</div>
+            </div>
+            <div style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; color: #FF6B4A; font-variant-numeric: tabular-nums; min-width: 78px;">{{ row.cost }}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500; color: #0090C8; background: #F0FAFE; border: 1px solid #CDEEFB; padding: 5px 9px; border-radius: 8px; white-space: nowrap;">{{ row.next }}</div>
+          </div>
+        </sc-for>
+
+        <!-- unknown bucket -->
+        <div style="margin-top: 18px; background: #F5F7FA; border: 1px dashed #D3DBE3; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 600; font-size: 13.5px; color: #64748B;">Unknown bucket</div>
+            <div style="font-size: 12px; color: #94A3B8; margin-top: 2px;">4 resources with no published SLA</div>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #64748B; background: #E7ECF1; padding: 5px 10px; border-radius: 7px;">excluded</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY STRIP -->
+  <section style="max-width: 1120px; margin: 0 auto; padding: 72px 32px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+      <div style="background: #0B1E33; border-radius: 22px; padding: 34px; color: #fff; position: relative; overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <div style="text-align: center;">
+            <div style="width: 62px; height: 62px; border-radius: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 26px;">🖥️</div>
+            <div style="font-size: 12px; color: #8DA2B8; margin-top: 10px; font-weight: 600;">Your machine</div>
+          </div>
+          <div style="flex: 1; text-align: center; position: relative;">
+            <div style="height: 2px; background: repeating-linear-gradient(90deg, #2A4056 0 8px, transparent 8px 16px);"></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #FF6B4A; margin-top: 8px; font-weight: 500;">✗ resource names stay here</div>
+          </div>
+          <div style="text-align: center; opacity: 0.4;">
+            <div style="width: 62px; height: 62px; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 26px;">☁️</div>
+            <div style="font-size: 12px; color: #8DA2B8; margin-top: 10px; font-weight: 600;">Our servers</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #0090C8; font-weight: 500;">// privacy</span>
+        <h2 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 12px 0 16px; line-height: 1.1;">Your resource names never leave your machine.</h2>
+        <p style="font-size: 17px; line-height: 1.55; color: #47586B; margin: 0;">The math runs entirely in your browser. We never see your subscription, your topology, or what you named that one VM at 2am. There's nothing to breach because there's nothing sent.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background: #0B1E33; color: #fff; padding: 56px 32px 40px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 32px; padding-bottom: 34px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div style="max-width: 320px;">
+          <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 14px;">
+            <div style="width: 34px; height: 34px; border-radius: 10px; background: #00AFF0; display: flex; align-items: center; justify-content: center;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 19px; color: #fff;">9</span>
+            </div>
+            <span style="font-weight: 800; font-size: 19px;">Only<span style="color: #00AFF0;">Nines</span></span>
+          </div>
+          <p style="font-size: 14px; color: #8DA2B8; line-height: 1.55; margin: 0;">We only count nines. Designed availability, computed honestly, from a query you already have.</p>
+        </div>
+
+        <div style="display: flex; gap: 56px;">
+          <div>
+            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #5E7590; font-weight: 700; margin-bottom: 14px;">Resources</div>
+            <div style="display: flex; flex-direction: column; gap: 11px; font-size: 14.5px;">
+              <a href="#" style="color: #C4D3E2;" style-hover="color: #00AFF0;">GitHub</a>
+              <a href="#" style="color: #C4D3E2;" style-hover="color: #00AFF0;">Methodology</a>
+              <a href="#" style="color: #C4D3E2;" style-hover="color: #00AFF0;">SLA sources</a>
+            </div>
+          </div>
+          <!-- uptime badge -->
+          <div>
+            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #5E7590; font-weight: 700; margin-bottom: 14px;">Our own uptime</div>
+            <div style="display: inline-flex; align-items: center; border-radius: 8px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.25);">
+              <span style="background: #253B52; padding: 7px 11px; color: #fff;">onlynines.app</span>
+              <span style="background: #00AFF0; padding: 7px 11px; color: #fff;">99.982%</span>
+            </div>
+            <div style="margin-top: 12px;">
+              <a href="#" style="font-size: 13px; color: #8DA2B8; display: inline-flex; align-items: center; gap: 6px;" style-hover="color: #00AFF0;">this site practices what it preaches — chaos-kill history →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding-top: 24px; font-size: 13px; color: #5E7590; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <span>© 2026 OnlyNines</span>
+        <span style="font-family: 'JetBrains Mono', monospace;">Designed availability, not a guarantee.</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mounted: false };
+
+  componentDidMount() {
+    requestAnimationFrame(() => {
+      setTimeout(() => this.setState({ mounted: true }), 260);
+    });
+  }
+
+  renderVals() {
+    // nines(99.75%) = -log10(1-0.9975) = 2.60 ; scale marks 1..5 nines
+    const nines = -Math.log10(1 - 0.9975);
+    const pct = ((nines - 1) / (5 - 1)) * 100; // ~40%
+    const gaugeWidth = this.state.mounted ? pct.toFixed(1) + "%" : "0%";
+
+    return {
+      gaugeWidth,
+      links: [
+        { name: "vm-web-01 · single instance", tier: "Standard VM · no availability set", cost: "7.9 h/yr", next: "Avail. Zones +0.09%" },
+        { name: "sql-orders-prod", tier: "SQL DB · Standard tier", cost: "6.2 h/yr", next: "Business Critical +0.04%" },
+        { name: "st-assets-lrs", tier: "Storage · LRS", cost: "4.4 h/yr", next: "ZRS +0.09%" },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- OnlyNines brand tile: azure, rounded ~25%, white mono "9", keyhole notch -->
+  <rect width="64" height="64" rx="16" fill="#00AFF0"/>
+  <text x="31" y="45" text-anchor="middle"
+        font-family="'JetBrains Mono','Cascadia Mono','Consolas',monospace"
+        font-weight="700" font-size="40" letter-spacing="-1" fill="#ffffff">9</text>
+  <circle cx="36" cy="50" r="3.2" fill="#ffffff"/>
+  <rect x="34.4" y="51.5" width="3.2" height="6.5" rx="1.6" fill="#ffffff"/>
+</svg>

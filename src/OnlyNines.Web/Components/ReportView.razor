@@ -1,0 +1,217 @@
+@using System.Globalization
+@inject IJSRuntime Js
+@inject StackStore Store
+@inject NavigationManager Nav
+
+@{
+    var scored = Groups.SelectMany(g => g.Members).Where(m => m.IsScored).ToList();
+    var envSla = Availability.Serial(scored.Select(m => m.Variant!.Sla));
+    var envSlaText = (envSla * 100).ToString("F3", CultureInfo.InvariantCulture);
+    var envGauge = (Math.Clamp((Availability.Nines(envSla) - 1) / 4.0, 0, 1) * 100)
+        .ToString("F1", CultureInfo.InvariantCulture);
+    var topWeakest = scored.OrderByDescending(m => m.DowntimeHoursPerYear).Take(5).ToList();
+    var unknown = Groups.SelectMany(g => g.Unknown).ToList();
+    var notApplicable = Groups.SelectMany(g => g.NotApplicable).ToList();
+}
+
+<!-- ============ ONE number. That's the product. ============ -->
+<div class="rp-header-card">
+    <div class="gauge-glow"></div>
+    <div class="rp-header-grid">
+        <div>
+            <span class="gauge-label">COMPOSITE SLA · YOUR ENVIRONMENT</span>
+            <div class="rp-figure">@envSlaText<span class="accent">%</span></div>
+            <div class="gauge-subfigure">
+                ≈ @Availability.DowntimeHoursPerYear(envSla).ToString("F1", CultureInfo.InvariantCulture) h/yr downtime budget
+                · @Availability.Nines(envSla).ToString("F1", CultureInfo.InvariantCulture) nines
+                · @scored.Count resources in @Groups.Count group(s), worst-case serial
+            </div>
+            <div class="gauge rp-gauge" data-gauge data-value="@envGauge">
+                <div class="gauge-track">
+                    <div class="gauge-fill"></div>
+                    <div class="gauge-knob"></div>
+                </div>
+                <div class="gauge-scale">
+                    <span>9</span><span>99</span><span>99.9</span><span>99.99</span><span>99.999</span>
+                </div>
+            </div>
+        </div>
+        <div class="rp-share">
+            <span class="rp-share-label">README BADGE</span>
+            <span class="uptime-badge"><span class="ub-left">OnlyNines</span><span class="ub-right">@((envSla * 100).ToString("F2", CultureInfo.InvariantCulture))%</span></span>
+            @if (SavedSlug is not null)
+            {
+                <button class="copy-quiet rp-share-btn" @onclick="() => CopyText(PermalinkUrl)">⧉ @_copyPermalinkLabel</button>
+                <button class="copy-quiet rp-share-btn" @onclick="() => CopyText(BadgeMarkdown)">⧉ @_copyBadgeLabel</button>
+            }
+            else if (Store.Enabled && RawInput is not null)
+            {
+                <button class="btn-primary rp-save-btn" @onclick="SaveStack" disabled="@_saving">@(_saving ? "Saving…" : "Save → permalink + live badge")</button>
+                <span class="rp-share-hint">saves the inventory you pasted; the report re-scores on every visit</span>
+            }
+            else
+            {
+                <span class="rp-share-hint">deploy with a database to enable permalinks &amp; live badges</span>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ============ Top weakest links, whole environment ============ -->
+@if (topWeakest.Count > 0)
+{
+    <div class="rp-card">
+        <div class="rp-card-heading">
+            <h2>Weakest links</h2>
+            <span class="mono-muted">top @topWeakest.Count across the environment · h/yr</span>
+        </div>
+        <div class="rp-table">
+            <div class="rp-table-head">
+                <span>#</span><span>Resource · current tier</span><span class="rp-right">Costs</span><span>Next rung</span>
+            </div>
+            @for (var i = 0; i < topWeakest.Count; i++)
+            {
+                var w = topWeakest[i];
+                <div class="rp-row">
+                    <span class="rp-rank">@(i + 1)</span>
+                    <div class="wl-name">@(w.Resource.Name ?? w.Resource.Id)<span class="wl-tier">@(w.Service?.Service) · @(w.Variant!.Id) · @(w.Resource.ResourceGroup)</span></div>
+                    <span class="wl-cost rp-right">@w.DowntimeHoursPerYear.ToString("F1", CultureInfo.InvariantCulture)<span class="rp-unit"> h/yr</span></span>
+                    <span>
+                        @if (w.NextRung is { } next)
+                        {
+                            <span class="wl-chip">@next.Id</span>
+                            <span class="rp-delta">+@(((next.Sla - w.Variant!.Sla) * 100).ToString("F2", CultureInfo.InvariantCulture))%</span>
+                        }
+                        else
+                        {
+                            <span class="mono-muted">—</span>
+                        }
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- ============ Per-group breakdown, collapsed by default ============ -->
+@if (Groups.Count > 1)
+{
+    <div class="rp-card">
+        <div class="rp-card-heading">
+            <h2>By resource group</h2>
+            <span class="mono-muted">click to expand</span>
+        </div>
+        @foreach (var group in Groups)
+        {
+            var weakest = group.WeakestLinks.ToList();
+            <details class="rp-group">
+                <summary>
+                    <span class="rp-group-name">@group.Group</span>
+                    <span class="rp-group-figures">
+                        <span class="sla-value">@((group.CompositeSla * 100).ToString("F3", CultureInfo.InvariantCulture))%</span>
+                        <span class="mono-muted">@group.DowntimeHoursPerYear.ToString("F1", CultureInfo.InvariantCulture) h/yr</span>
+                    </span>
+                </summary>
+                @if (weakest.Count > 0)
+                {
+                    <div class="rp-group-body">
+                        @foreach (var w in weakest)
+                        {
+                            <div class="rp-row">
+                                <span class="rp-rank">·</span>
+                                <div class="wl-name">@(w.Resource.Name ?? w.Resource.Id)<span class="wl-tier">@(w.Service?.Service) · @(w.Variant!.Id)</span></div>
+                                <span class="wl-cost rp-right">@w.DowntimeHoursPerYear.ToString("F1", CultureInfo.InvariantCulture)<span class="rp-unit"> h/yr</span></span>
+                                <span>
+                                    @if (w.NextRung is { } next)
+                                    {
+                                        <span class="wl-chip">@next.Id</span>
+                                        <span class="rp-delta">+@(((next.Sla - w.Variant!.Sla) * 100).ToString("F2", CultureInfo.InvariantCulture))%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="mono-muted">—</span>
+                                    }
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+            </details>
+        }
+    </div>
+}
+
+<!-- ============ Honesty section: unknown + not-applicable, once ============ -->
+@if (unknown.Count > 0)
+{
+    <div class="rp-unknown">
+        <div>
+            <div class="rp-unknown-title">● Unknown bucket</div>
+            <p>
+                @unknown.Count resource(s) have no published Microsoft SLA in our dataset, so we
+                <strong>excluded</strong> them from the composite rather than guess.
+                They're not hidden — they're just not counted.
+            </p>
+            <div class="rp-unknown-chips">
+                @foreach (var u in unknown)
+                {
+                    <span class="ub-tag">@(u.Resource.Name ?? u.Resource.Type)</span>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (notApplicable.Count > 0)
+{
+    <div class="rp-na">
+        <span class="mono-muted">Not counted (by design):</span>
+        @foreach (var na in notApplicable)
+        {
+            <span class="ub-tag" title="@na.Service!.IgnoreReason">@(na.Resource.Name ?? na.Resource.Type)</span>
+        }
+    </div>
+}
+
+<div class="rp-methodology-link">
+    <a class="teaser-link" href="/methodology">Methodology &amp; SLA sources →</a>
+</div>
+
+<div class="rp-footnote"><span class="accent">ⓘ</span> Designed availability, not a guarantee.</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<GroupScore> Groups { get; set; } = Array.Empty<GroupScore>();
+
+    /// <summary>Raw pasted inventory — enables the save button when the store is configured.</summary>
+    [Parameter] public string? RawInput { get; set; }
+
+    /// <summary>Set when rendering an already-saved stack (shows share actions instead of save).</summary>
+    [Parameter] public string? SavedSlug { get; set; }
+
+    private bool _saving;
+    private string _copyPermalinkLabel = "Copy permalink";
+    private string _copyBadgeLabel = "Copy badge markdown";
+
+    private string PermalinkUrl => $"{Nav.BaseUri.TrimEnd('/')}/stack/{SavedSlug}";
+    private string BadgeMarkdown =>
+        $"[![OnlyNines]({Nav.BaseUri.TrimEnd('/')}/badge/{SavedSlug}.svg)]({PermalinkUrl})";
+
+    private async Task SaveStack()
+    {
+        if (RawInput is null) return;
+        _saving = true;
+        var slug = await Store.SaveAsync(RawInput);
+        Nav.NavigateTo($"/stack/{slug}");
+    }
+
+    private async Task CopyText(string text)
+    {
+        await Js.InvokeVoidAsync("onlyninesCopyText", text);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Js.InvokeVoidAsync("onlyninesRefreshGauges");
+    }
+}

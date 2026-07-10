@@ -1,0 +1,5 @@
+service: Azure Container Apps Agents
+resourceType: microsoft.app/agents
+lastVerified: "2026-07-10"
+ignore: true
+ignoreReason: Preview service without a published SLA (as of last verification). We don't guess.

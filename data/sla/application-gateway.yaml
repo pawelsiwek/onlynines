@@ -1,0 +1,11 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure Application Gateway (v2)
+resourceType: microsoft.network/applicationgateways
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: v2
+    match: {}
+    sla: 0.9995
+    upgradeNote: Assumes >=2 instances or autoscaling enabled.
+ladder: [v2]

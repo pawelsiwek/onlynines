@@ -1,0 +1,17 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure Kubernetes Service
+resourceType: microsoft.containerservice/managedclusters
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: standard-with-zones
+    match: { skuTier: [Standard, Premium], zoneCount: ["2", "3"] }
+    sla: 0.9995
+  - id: standard
+    match: { skuTier: [Standard, Premium] }
+    sla: 0.999
+  - id: free-tier
+    match: {}
+    sla: 0.995
+    upgradeNote: Free tier is an SLO, not a financially-backed SLA. Standard tier adds the uptime SLA.
+ladder: [free-tier, standard, standard-with-zones]

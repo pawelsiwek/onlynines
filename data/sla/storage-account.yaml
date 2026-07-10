@@ -1,0 +1,19 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+# Storage SLA differs by access tier (hot/cool) and read vs write; these are
+# simplified read-path values for the common case. Refine in v2.
+service: Azure Storage Account
+resourceType: microsoft.storage/storageaccounts
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: zrs
+    match: { replication: [Standard_ZRS, Standard_GZRS, Standard_RAGZRS] }
+    sla: 0.9999
+  - id: geo-redundant
+    match: { replication: [Standard_GRS, Standard_RAGRS] }
+    sla: 0.9999
+  - id: lrs
+    match: {}
+    sla: 0.999
+    upgradeNote: LRS lives in a single datacenter. ZRS spreads across zones at moderate extra cost.
+ladder: [lrs, geo-redundant, zrs]

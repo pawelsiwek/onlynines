@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #EEF3F8; }
+  a { color: #00AFF0; text-decoration: none; }
+  a:hover { color: #0090C8; }
+</style>
+</helmet>
+
+<div style="font-family: 'Poppins', system-ui, sans-serif; color: #0B1E33; background: #EEF3F8; padding: 56px; display: flex; flex-direction: column; gap: 40px; width: 1240px;">
+
+  <div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #0090C8; font-weight: 500;">// brand board</div>
+    <h1 style="font-size: 40px; font-weight: 800; letter-spacing: -1.5px; margin: 8px 0 4px;">OnlyNines identity</h1>
+    <p style="font-size: 16px; color: #47586B; margin: 0;">Playful geometry, instrument-grade numbers. We only count nines.</p>
+  </div>
+
+  <!-- GLYPH ROW -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div style="background: #fff; border-radius: 22px; padding: 34px; border: 1px solid #E7EDF3; box-shadow: 0 10px 30px rgba(11,30,51,0.05);">
+      <div style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 24px;">Glyph mark — padlock "9"</div>
+      <div style="display: flex; align-items: center; gap: 40px;">
+        <svg width="112" height="132" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="52" cy="40" r="24" stroke="#00AFF0" stroke-width="12" fill="none"/>
+          <line x1="76" y1="40" x2="76" y2="74" stroke="#00AFF0" stroke-width="12" stroke-linecap="round"/>
+          <rect x="30" y="68" width="52" height="44" rx="13" fill="#00AFF0"/>
+          <circle cx="56" cy="86" r="6" fill="#fff"/>
+          <rect x="53" y="89" width="6" height="13" rx="3" fill="#fff"/>
+        </svg>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <svg width="72" height="85" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="52" cy="40" r="24" stroke="#0B1E33" stroke-width="12" fill="none"/>
+            <line x1="76" y1="40" x2="76" y2="74" stroke="#0B1E33" stroke-width="12" stroke-linecap="round"/>
+            <rect x="30" y="68" width="52" height="44" rx="13" fill="#0B1E33"/>
+            <circle cx="56" cy="86" r="6" fill="#fff"/>
+            <rect x="53" y="89" width="6" height="13" rx="3" fill="#fff"/>
+          </svg>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94A3B8;">the bowl + stem read as 9;<br>the body + keyhole read as lock</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #0B1E33; border-radius: 22px; padding: 34px; box-shadow: 0 10px 30px rgba(11,30,51,0.2);">
+      <div style="font-size: 12px; font-weight: 700; color: #5E7590; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 24px;">App icon</div>
+      <div style="display: flex; align-items: center; gap: 32px;">
+        <div style="width: 104px; height: 104px; border-radius: 26px; background: #00AFF0; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 30px rgba(0,175,240,0.45); position: relative;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 62px; color: #fff; line-height: 1; letter-spacing: -3px;">9</span>
+          <span style="position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%) translateX(9px); width: 9px; height: 18px; background: #00AFF0; border-radius: 0 0 4px 4px;"></span>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="width: 56px; height: 56px; border-radius: 15px; background: #00AFF0; display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 32px; color: #fff; letter-spacing: -2px;">9</span></div>
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: #00AFF0; display: flex; align-items: center; justify-content: center;"><span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; color: #fff; letter-spacing: -1px;">9</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORDMARK ROW -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div style="background: #fff; border-radius: 22px; padding: 40px; border: 1px solid #E7EDF3; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 42px; height: 42px; border-radius: 12px; background: #00AFF0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,175,240,0.35);">
+        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 24px; color: #fff; letter-spacing: -1px;">9</span>
+      </div>
+      <span style="font-weight: 800; font-size: 30px; letter-spacing: -0.8px;">Only<span style="color: #00AFF0;">Nines</span></span>
+    </div>
+    <div style="background: #0B1E33; border-radius: 22px; padding: 40px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 42px; height: 42px; border-radius: 12px; background: #00AFF0; display: flex; align-items: center; justify-content: center;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 24px; color: #fff; letter-spacing: -1px;">9</span>
+      </div>
+      <span style="font-weight: 800; font-size: 30px; letter-spacing: -0.8px; color: #fff;">Only<span style="color: #00AFF0;">Nines</span></span>
+    </div>
+  </div>
+
+  <!-- PALETTE + TYPE -->
+  <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px;">
+    <div style="background: #fff; border-radius: 22px; padding: 30px; border: 1px solid #E7EDF3;">
+      <div style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 20px;">Palette</div>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+        <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="5">
+          <div>
+            <div style="height: 68px; border-radius: 12px; background: {{ s.hex }}; border: 1px solid rgba(11,30,51,0.08);"></div>
+            <div style="font-weight: 700; font-size: 12px; margin-top: 8px;">{{ s.name }}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94A3B8;">{{ s.hex }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size: 12px; color: #94A3B8; margin-top: 16px;">Green used <em>sparingly</em> — nines are earned, not given. Coral only marks the weakest link.</div>
+    </div>
+    <div style="background: #fff; border-radius: 22px; padding: 30px; border: 1px solid #E7EDF3;">
+      <div style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 20px;">Type</div>
+      <div style="font-family: 'Poppins'; font-weight: 800; font-size: 30px; letter-spacing: -1px;">Poppins</div>
+      <div style="font-size: 13px; color: #64748B; margin-bottom: 20px;">Rounded geometric sans · UI &amp; headings · 400–800</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 30px; letter-spacing: -1px; font-variant-numeric: tabular-nums;">99.750%</div>
+      <div style="font-size: 13px; color: #64748B;">JetBrains Mono · every SLA figure · tabular numerals</div>
+    </div>
+  </div>
+
+  <!-- BADGE COMPONENT -->
+  <div style="background: #fff; border-radius: 22px; padding: 34px; border: 1px solid #E7EDF3;">
+    <div style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;">README badge · shields.io style</div>
+    <p style="font-size: 13.5px; color: #64748B; margin: 0 0 24px;">Left label navy, value chip colored by tier. Green is rare on purpose.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: center;">
+      <sc-for list="{{ badges }}" as="b" hint-placeholder-count="4">
+        <div style="display: inline-flex; align-items: center; border-radius: 6px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; box-shadow: 0 3px 10px rgba(11,30,51,0.12);">
+          <span style="background: #253B52; padding: 7px 11px; color: #fff;">{{ b.label }}</span>
+          <span style="background: {{ b.color }}; padding: 7px 11px; color: #fff;">{{ b.value }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top: 22px; background: #0B1E33; border-radius: 10px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #A9C6E0;">![OnlyNines](https://onlynines.app/badge/&lt;env-id&gt;.svg)</div>
+  </div>
+
+  <!-- OG IMAGE TEMPLATE -->
+  <div>
+    <div style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px;">OG image template · 1200 × 630</div>
+    <div style="width: 1128px; height: 592px; border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(11,30,51,0.25); background: #0B1E33; position: relative; color: #fff; padding: 64px 72px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="position: absolute; top: -140px; right: -120px; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(0,175,240,0.3), transparent 70%);"></div>
+      <div style="position: relative; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 52px; height: 52px; border-radius: 15px; background: #00AFF0; display: flex; align-items: center; justify-content: center;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 30px; color: #fff; letter-spacing: -1.5px;">9</span>
+          </div>
+          <span style="font-weight: 800; font-size: 30px; letter-spacing: -0.6px;">Only<span style="color: #00AFF0;">Nines</span></span>
+        </div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 17px; color: #8DA2B8; background: rgba(0,175,240,0.14); padding: 8px 16px; border-radius: 8px;">azure · prod</span>
+      </div>
+
+      <div style="position: relative;">
+        <div style="font-size: 22px; color: #8DA2B8; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">Composite SLA</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 168px; letter-spacing: -8px; line-height: 0.85; font-variant-numeric: tabular-nums;">99.750<span style="color: #00AFF0;">%</span></div>
+        <div style="display: flex; align-items: center; gap: 24px; margin-top: 18px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; color: #A9C6E0;">≈ 21.9 h/yr downtime budget</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #FF6B4A;">weakest: vm-web-01</span>
+        </div>
+      </div>
+
+      <div style="position: relative; display: flex; align-items: center; justify-content: space-between;">
+        <div style="height: 12px; flex: 1; background: rgba(255,255,255,0.08); border-radius: 999px; position: relative; margin-right: 40px;">
+          <div style="height: 12px; width: 40%; border-radius: 999px; background: linear-gradient(90deg, #00AFF0, #4FD0FF);"></div>
+          <div style="position: absolute; top: 50%; left: 40%; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 5px solid #00AFF0; transform: translate(-50%,-50%);"></div>
+        </div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #5E7590;">onlynines.app</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      swatches: [
+        { name: "Azure", hex: "#00AFF0" },
+        { name: "Navy", hex: "#0B1E33" },
+        { name: "Coral", hex: "#FF6B4A" },
+        { name: "Green", hex: "#1F8A5B" },
+        { name: "Mist", hex: "#EEF3F8" },
+      ],
+      badges: [
+        { label: "OnlyNines", value: "99.75%", color: "#00AFF0" },
+        { label: "SLA", value: "99.99%", color: "#1F8A5B" },
+        { label: "SLA", value: "99.5%", color: "#FF6B4A" },
+        { label: "nines", value: "2.6", color: "#0B1E33" },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure Database for MySQL Flexible Server
+resourceType: microsoft.dbformysql/flexibleservers
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: zone-redundant-ha
+    match: { ha: ZoneRedundant }
+    sla: 0.9999
+  - id: same-zone-ha
+    match: { ha: SameZone }
+    sla: 0.9995
+  - id: no-ha
+    match: {}
+    sla: 0.999
+    upgradeNote: HA requires General Purpose or Business Critical tier; compute cost roughly doubles.
+ladder: [no-ha, same-zone-ha, zone-redundant-ha]

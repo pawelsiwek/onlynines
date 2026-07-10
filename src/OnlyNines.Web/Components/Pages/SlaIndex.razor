@@ -1,0 +1,56 @@
+@page "/sla"
+@using System.Globalization
+@inject DatasetProvider Dataset
+
+<PageTitle>Azure SLA database — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="page-shell">
+    <span class="mono-eyebrow">// sla sources</span>
+    <h1 class="page-title">The dataset.</h1>
+    <p class="page-sub">
+        Every value has a source and a <code>lastVerified</code> date, and CI fails when one goes stale.
+        Wrong or outdated? <a class="accent" href="https://github.com/pawelsiwek/onlynines/tree/main/data/sla" target="_blank" rel="noopener">Send a PR</a> — it's one YAML file.
+    </p>
+
+    @foreach (var service in Dataset.Services.Where(s => !s.Ignore).OrderBy(s => s.Service))
+    {
+        <div class="rp-card">
+            <div class="rp-card-heading">
+                <h2>@service.Service</h2>
+                <span class="mono-muted">verified @service.LastVerified</span>
+            </div>
+            <div class="sla-variants">
+                @foreach (var v in service.Variants)
+                {
+                    <div class="sla-variant-row">
+                        <span class="wl-chip">@v.Id</span>
+                        <span class="sla-value">@((v.Sla * 100).ToString("F3", CultureInfo.InvariantCulture))%</span>
+                        <span class="mono-muted">@Availability.DowntimeHoursPerYear(v.Sla).ToString("F1", CultureInfo.InvariantCulture) h/yr</span>
+                        @if (v.UpgradeNote is not null)
+                        {
+                            <span class="sla-note">@v.UpgradeNote</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="rp-card">
+        <div class="rp-card-heading">
+            <h2>Deliberately not counted</h2>
+            <span class="mono-muted">known types, no own SLA</span>
+        </div>
+        @foreach (var service in Dataset.Services.Where(s => s.Ignore).OrderBy(s => s.Service))
+        {
+            <div class="sla-variant-row">
+                <span class="ub-tag">@service.ResourceType</span>
+                <span class="sla-note">@service.IgnoreReason</span>
+            </div>
+        }
+    </div>
+
+    <div class="rp-footnote"><span class="accent">ⓘ</span> Draft values pending verification against current Microsoft SLA documents.</div>
+</div>

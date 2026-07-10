@@ -1,0 +1,5 @@
+service: App Service app / Function App (site)
+resourceType: microsoft.web/sites
+lastVerified: "2026-07-10"
+ignore: true
+ignoreReason: Availability is determined by the App Service plan (microsoft.web/serverfarms), which we score. Counting both would double-count the same dependency.

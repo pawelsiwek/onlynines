@@ -1,0 +1,207 @@
+@page "/"
+@using OnlyNines.Core
+
+<!-- ============ NAV ============ -->
+<div class="container">
+    <nav class="nav">
+        <a class="brand" href="/">
+            <span class="brand-mark">9<span class="brand-keyhole"></span></span>
+            <span class="brand-word">Only<span class="brand-word-accent">Nines</span></span>
+        </a>
+        <div class="nav-links">
+            <a href="/methodology">Methodology</a>
+            <a href="https://github.com/pawelsiwek/onlynines" target="_blank" rel="noopener">GitHub</a>
+            <a class="nav-cta" href="/assess">Assess my environment</a>
+        </div>
+    </nav>
+</div>
+
+<!-- ============ HERO ============ -->
+<div class="container">
+    <section class="hero">
+        <div>
+            <span class="eyebrow-pill"><span class="dot"></span>SLA calculator for Azure infrastructure</span>
+            <h1>One query.<br />Your <span class="accent">real</span> Azure SLA.</h1>
+            <p class="hero-sub">
+                Compute the composite SLA of your entire Azure cloud environment — every VM, database
+                and storage account — from a single Azure Resource Graph query.
+                No login. No credentials. No agent. We only count nines.
+            </p>
+            <div class="cta-row">
+                <a class="btn-primary" href="/assess">Show me your nines →</a>
+                <a class="btn-secondary" href="/calculator">Just give me the calculator</a>
+            </div>
+            <div class="trust-row">
+                <span><span class="check">✓</span> Runs in your browser</span>
+                <span><span class="check">✓</span> Zero-trust by design</span>
+            </div>
+        </div>
+
+        <div class="gauge-card">
+            <div class="gauge-glow"></div>
+            <div class="gauge-card-header">
+                <span class="gauge-label">COMPOSITE SLA</span>
+                <span class="gauge-tag">azure · prod</span>
+            </div>
+            <div class="gauge-figure">@ShowcaseSlaText<span class="accent">%</span></div>
+            <div class="gauge-subfigure">≈ @ShowcaseDowntime h/yr downtime budget</div>
+            <div class="gauge" data-gauge data-value="@GaugePositionPercent">
+                <div class="gauge-track">
+                    <div class="gauge-fill"></div>
+                    <div class="gauge-knob"></div>
+                </div>
+                <div class="gauge-scale">
+                    <span>9</span><span>99</span><span>99.9</span><span>99.99</span><span>99.999</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ============ THREE STEPS ============ -->
+<div class="container">
+    <section class="steps">
+        <div class="steps-heading">
+            <h2>Three steps to your Azure nines</h2>
+            <p>Straight from Azure Resource Graph. No SDK. No pipeline. Paste, export, count.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-head"><span class="step-num">01</span><span class="step-title">Paste KQL</span></div>
+                <pre class="code-block"><code><span class="c-kw">resources</span>
+<span class="c-pipe">|</span> <span class="c-kw">where</span> type =~ <span class="c-str">"microsoft.compute/..."</span>
+<span class="c-pipe">|</span> <span class="c-kw">project</span> name, sku, zones</code></pre>
+            </div>
+            <div class="step-card">
+                <div class="step-head"><span class="step-num">02</span><span class="step-title">Export JSON</span></div>
+                <pre class="code-block"><code>[ {
+  <span class="c-kw">"name"</span>: <span class="c-str">"vm-web-01"</span>,
+  <span class="c-kw">"zones"</span>: <span class="c-val">null</span> } ]</code></pre>
+            </div>
+            <div class="step-card">
+                <div class="step-head"><span class="step-num step-num-final">03</span><span class="step-title">Get your nines</span></div>
+                <div class="result-block">
+                    <span class="result-figure">@ShowcaseSlaText%</span>
+                    <span class="result-label">composite</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ============ REPORT TEASER ============ -->
+<div class="band">
+    <section class="teaser container">
+        <div>
+            <span class="mono-eyebrow">// the report</span>
+            <h2>See exactly which resource is dragging you down.</h2>
+            <p>
+                Every resource ranked by the downtime it costs you per year. The weakest link gets
+                the coral. The upgrade path gets a chip. Nothing gets hidden.
+            </p>
+            <a class="teaser-link" href="/report/sample">View a sample report →</a>
+        </div>
+        <div class="report-card">
+            <div class="report-card-header">
+                <span>WEAKEST LINKS</span>
+                <span class="mono-muted">by h/yr cost</span>
+            </div>
+            <div class="wl-row">
+                <div class="wl-name">vm-web-01 · single instance<span class="wl-tier">Standard VM · no availability set</span></div>
+                <span class="wl-cost">7.9 h/yr</span>
+                <span class="wl-chip">Avail. Zones +0.09%</span>
+            </div>
+            <div class="wl-row">
+                <div class="wl-name">sql-orders-prod<span class="wl-tier">SQL DB · Standard tier</span></div>
+                <span class="wl-cost">6.2 h/yr</span>
+                <span class="wl-chip">Business Critical +0.04%</span>
+            </div>
+            <div class="wl-row">
+                <div class="wl-name">st-assets-lrs<span class="wl-tier">Storage · LRS</span></div>
+                <span class="wl-cost">4.4 h/yr</span>
+                <span class="wl-chip">ZRS +0.09%</span>
+            </div>
+            <div class="unknown-bucket">
+                <div>
+                    <div class="ub-title">Unknown bucket</div>
+                    <div class="ub-sub">4 resources with no published SLA</div>
+                </div>
+                <span class="ub-tag">excluded</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ============ PRIVACY ============ -->
+<div class="container">
+    <section class="privacy">
+        <div class="privacy-diagram">
+            <div class="pd-node">
+                <div class="pd-tile">🖥️</div>
+                <div class="pd-label">Your machine</div>
+            </div>
+            <div class="pd-middle">
+                <div class="pd-line"></div>
+                <div class="pd-caption">✗ resource names stay here</div>
+            </div>
+            <div class="pd-node pd-node-faded">
+                <div class="pd-tile">☁️</div>
+                <div class="pd-label">Our servers</div>
+            </div>
+        </div>
+        <div>
+            <span class="mono-eyebrow">// privacy</span>
+            <h2>Your resource names never leave your machine.</h2>
+            <p>
+                The math runs entirely in your browser. We never see your subscription, your topology,
+                or what you named that one VM at 2am. There's nothing to breach because there's
+                nothing sent.
+            </p>
+        </div>
+    </section>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="brand" href="/">
+                    <span class="brand-mark brand-mark-sm">9</span>
+                    <span class="brand-word brand-word-dark">Only<span class="brand-word-accent">Nines</span></span>
+                </a>
+                <p>We only count nines. Designed availability, computed honestly, from a query you already have.</p>
+            </div>
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <div class="footer-col-title">RESOURCES</div>
+                    <a href="https://github.com/pawelsiwek/onlynines" target="_blank" rel="noopener">GitHub</a>
+                    <a href="/methodology">Methodology</a>
+                    <a href="/sla">SLA sources</a>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">OUR OWN UPTIME</div>
+                    <span class="uptime-badge"><span class="ub-left">onlynines.app</span><span class="ub-right">99.982%</span></span>
+                    <a class="footer-status-link" href="/status">this site practices what it preaches — chaos-kill history →</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 OnlyNines</span>
+            <span class="mono">Designed availability, not a guarantee.</span>
+        </div>
+    </div>
+</footer>
+
+@code {
+    // Showcase values for the landing page. The report page computes these from real input.
+    private const double ShowcaseSla = 0.99750;
+
+    private static string ShowcaseSlaText => (ShowcaseSla * 100).ToString("F3", System.Globalization.CultureInfo.InvariantCulture);
+    private static string ShowcaseDowntime => Availability.DowntimeHoursPerYear(ShowcaseSla).ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+
+    // Gauge: nines milestones 1..5 evenly spaced → position = (nines-1)/4.
+    private static string GaugePositionPercent =>
+        (Math.Clamp((Availability.Nines(ShowcaseSla) - 1) / 4.0, 0, 1) * 100)
+            .ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+}

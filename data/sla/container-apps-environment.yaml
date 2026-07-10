@@ -1,0 +1,5 @@
+service: Azure Container Apps Environment
+resourceType: microsoft.app/managedenvironments
+lastVerified: "2026-07-10"
+ignore: true
+ignoreReason: SLA applies to the container apps inside it, not to the environment resource itself. Its zone redundancy setting affects the apps' resilience.

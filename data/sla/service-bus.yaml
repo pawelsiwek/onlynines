@@ -1,0 +1,13 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure Service Bus
+resourceType: microsoft.servicebus/namespaces
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: premium
+    match: { skuTier: Premium }
+    sla: 0.9995
+  - id: standard
+    match: {}
+    sla: 0.999
+ladder: [standard, premium]

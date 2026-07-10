@@ -1,0 +1,11 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure AI Services (Cognitive Services / OpenAI)
+resourceType: microsoft.cognitiveservices/accounts
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: standard
+    match: {}
+    sla: 0.999
+    upgradeNote: Provisioned throughput deployments may carry different guarantees; multi-region routing is the usual resilience upgrade.
+ladder: [standard]

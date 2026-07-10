@@ -1,0 +1,194 @@
+@page "/assess"
+@rendermode InteractiveServer
+@inject DatasetProvider Dataset
+@inject KqlProvider Kql
+@inject IJSRuntime Js
+
+<PageTitle>Assess your environment — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="assess-band">
+    <div class="assess-wrap">
+        <div class="assess-header">
+            <span class="mono-eyebrow">// assess</span>
+            <h1>Show me your nines.</h1>
+            <p>Two steps: get your inventory out of Azure, paste it here. We count what's honest to count.</p>
+        </div>
+
+        <div class="flow-card">
+            <!-- ============ STEP 01 ============ -->
+            <section class="step">
+                <div class="step-header">
+                    <span class="step-chip">01</span>
+                    <h2>Get the inventory</h2>
+                    <button class="copy-quiet" @onclick="Copy">⧉ @CopyLabel</button>
+                </div>
+
+                <div class="seg-tabs">
+                    <button class="seg-tab @(Source == SourceTab.CloudShell ? "seg-tab-active" : "")"
+                            @onclick="() => Source = SourceTab.CloudShell">Cloud Shell · recommended</button>
+                    <button class="seg-tab @(Source == SourceTab.Portal ? "seg-tab-active" : "")"
+                            @onclick="() => Source = SourceTab.Portal">Portal (KQL + CSV)</button>
+                    <button class="seg-tab @(Source == SourceTab.Paranoid ? "seg-tab-active" : "")"
+                            @onclick="() => Source = SourceTab.Paranoid">paranoid</button>
+                </div>
+
+                <div class="code-shell">
+                    <div class="code-chrome">
+                        <span class="dot dot-coral"></span><span class="dot dot-amber"></span><span class="dot dot-green"></span>
+                        <span class="code-filename">@Filename</span>
+                        <span class="code-ro">read-only</span>
+                    </div>
+                    <pre class="kql-code"><code>@((MarkupString)HighlightedQuery)</code></pre>
+                </div>
+
+                <div class="step-action-row">
+                    <a class="btn-primary step-open" href="@ActionHref" target="_blank" rel="noopener">@ActionLabel</a>
+                    <p class="step-hint">@Hint</p>
+                </div>
+            </section>
+
+            <div class="flow-divider"></div>
+
+            <!-- ============ STEP 02 ============ -->
+            <section class="step">
+                <div class="step-header">
+                    <span class="step-chip">02</span>
+                    <h2>Paste the output — JSON or CSV, we'll figure it out</h2>
+                    <span class="live-counter @(DetectedCount > 0 ? "counter-ok" : "")">@CounterText</span>
+                </div>
+
+                <textarea class="paste-field" @bind="Input" @bind:event="oninput"
+                          placeholder='[ { "name": "vm-web-01", "type": "microsoft.compute/virtualmachines", ... } ]  — or the CSV, straight from the download'></textarea>
+                <p class="privacy-line">🔒 Resource names are for your eyes — use the paranoid query to hash them at the source.</p>
+
+                <div class="cta-row assess-cta">
+                    <button class="btn-primary" @onclick="Run" disabled="@(DetectedCount == 0)">Count my nines →</button>
+                    <label class="btn-secondary assess-upload">
+                        …or upload the CSV / JSON file
+                        <InputFile OnChange="OnFile" />
+                    </label>
+                    <button class="btn-tertiary" @onclick="LoadSample">Try with sample data</button>
+                </div>
+            </section>
+        </div>
+
+        @if (Error is not null)
+        {
+            <div class="assess-error">@Error</div>
+        }
+
+        @if (Groups is not null)
+        {
+            <ReportView Groups="Groups" RawInput="@Input" />
+        }
+    </div>
+</div>
+
+@code {
+    private enum SourceTab { CloudShell, Portal, Paranoid }
+
+    private SourceTab Source { get; set; } = SourceTab.CloudShell;
+    private string? Error;
+    private IReadOnlyList<GroupScore>? Groups;
+    private string CopyLabel = "Copy";
+    private int DetectedCount;
+
+    private string _input = "";
+    private string Input
+    {
+        get => _input;
+        set { _input = value; Detect(); }
+    }
+
+    private string CurrentSnippet => Source switch
+    {
+        SourceTab.CloudShell => Kql.CloudShellCommand,
+        SourceTab.Paranoid => Kql.Paranoid,
+        _ => Kql.Default,
+    };
+
+    private string HighlightedQuery => KqlHighlighter.Highlight(CurrentSnippet);
+
+    private string Filename => Source switch
+    {
+        SourceTab.CloudShell => "cloud-shell.sh",
+        SourceTab.Paranoid => "inventory-paranoid.kql",
+        _ => "inventory.kql",
+    };
+
+    private string ActionHref => Source == SourceTab.CloudShell
+        ? "https://shell.azure.com"
+        : "https://portal.azure.com/#view/HubsExtension/ArgQueryBlade";
+
+    private string ActionLabel => Source == SourceTab.CloudShell
+        ? "Open Cloud Shell ↗"
+        : "Open Resource Graph Explorer ↗";
+
+    private string Hint => Source switch
+    {
+        SourceTab.CloudShell => "Paste, Enter — onlynines.json downloads itself. Drop the file below. Nothing to copy from the terminal.",
+        SourceTab.Paranoid => "Same query, identifiers hashed at the source — nothing sensitive ever leaves your tenant. Run it, Download as CSV, drop it below.",
+        _ => "Run the query, then Download as CSV and drop the file below. (The portal has no JSON export. We've made peace with it.)",
+    };
+
+    private string CounterText => DetectedCount > 0 ? $"✓ {DetectedCount} resources detected" : "waiting for input";
+
+    private void Detect()
+    {
+        try
+        {
+            DetectedCount = string.IsNullOrWhiteSpace(_input) ? 0 : ResourceGraphParser.Parse(_input).Count;
+        }
+        catch
+        {
+            DetectedCount = 0;
+        }
+    }
+
+    private async Task Copy()
+    {
+        await Js.InvokeVoidAsync("onlyninesCopyText", CurrentSnippet);
+        CopyLabel = "Copied ✓";
+        await Task.Delay(1600);
+        CopyLabel = "Copy";
+    }
+
+    private async Task OnFile(InputFileChangeEventArgs e)
+    {
+        Error = null;
+        try
+        {
+            using var reader = new StreamReader(e.File.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024));
+            Input = await reader.ReadToEndAsync();
+            Run();
+        }
+        catch (Exception ex)
+        {
+            Error = $"Could not read that file: {ex.Message}";
+        }
+    }
+
+    private void Run()
+    {
+        Error = null;
+        Groups = null;
+        try
+        {
+            var resources = ResourceGraphParser.Parse(Input);
+            if (resources.Count == 0) { Error = "Parsed 0 resources — is this the right export?"; return; }
+            Groups = Dataset.Scorer.ScoreEnvironment(resources);
+        }
+        catch (Exception ex)
+        {
+            Error = $"Could not parse that: {ex.Message}";
+        }
+    }
+
+    private void LoadSample()
+    {
+        Input = SampleData.Json;
+        Run();
+    }
+}

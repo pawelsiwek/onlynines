@@ -1,0 +1,17 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+# Note: 99.99% for VMs requires >=2 instances across availability zones — that is a
+# property of a SET, not a single resource. Mark VM pairs as a redundant set in the UI.
+service: Azure Virtual Machines
+resourceType: microsoft.compute/virtualmachines
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: zonal-single
+    match: { zoneCount: "1" }
+    sla: 0.999
+    upgradeNote: Single VM in a zone. Add a second VM in another zone + LB and mark as redundant set (99.99% as a set).
+  - id: single-premium-disk
+    match: {}
+    sla: 0.999
+    upgradeNote: Assumes Premium SSD / Ultra disk. Standard HDD single VM carries a lower SLA — verify.
+ladder: [single-premium-disk, zonal-single]

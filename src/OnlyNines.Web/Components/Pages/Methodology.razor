@@ -1,0 +1,30 @@
+@page "/methodology"
+
+<PageTitle>Methodology — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="page-shell page-prose">
+    <span class="mono-eyebrow">// methodology</span>
+    <h1 class="page-title">The math, honestly.</h1>
+    <p class="page-sub">a.k.a. "come at me" — every simplification documented, so you can attack the model instead of the numbers.</p>
+
+    <h2>The model</h2>
+    <p><strong>Grouping.</strong> By default, one resource group = one application. This is wrong often enough that regrouping is planned; the grouping is your statement about what "the app" is — we just provide a default.</p>
+    <p><strong>Serial composition (default).</strong> Every scored resource in a group is treated as a hard dependency: <code>SLA = Π SLAᵢ</code>. This is the worst case. Real architectures have soft dependencies — a cache that degrades instead of failing — but modeling that requires knowledge we don't have. Worst case is honest; optimistic guesses are not.</p>
+    <p><strong>Parallel sets (planned, opt-in).</strong> Resources marked as redundant compose as <code>1 − Π(1 − SLAᵢ)</code>. This is an <em>upper bound</em>: it assumes independent failures. Zone-redundant pairs share a region, a config, a deployment pipeline, and a 2 a.m. hotfix.</p>
+    <p><strong>Unknown bucket.</strong> Anything we can't map to a dataset variant is listed, not skipped. A report that silently ignores half your environment is marketing.</p>
+
+    <h2>What the numbers are NOT</h2>
+    <p><strong>Not a financially-backed SLA.</strong> Microsoft's SLA is a refund policy, not a physics model.</p>
+    <p><strong>Not observed uptime.</strong> Your monitoring knows what actually happened; we compute what the architecture permits.</p>
+    <p><strong>Not a prediction.</strong> Most downtime is caused by deployments and configuration, which no architecture diagram captures.</p>
+
+    <h2>Dataset</h2>
+    <p><a class="accent" href="/sla">data/sla</a> maps resource type + configuration to an SLA value with a source link and a <code>lastVerified</code> date. CI fails when a file goes stale (&gt;90 days). Values are community-maintained; PRs with a source link are the canonical contribution.</p>
+
+    <h2>Known limitations (v1)</h2>
+    <p>Per-resource scoring can't see set-level SLAs (e.g., two VMs across zones = 99.99% <em>as a set</em>). Regional pairing and multi-region failover are not modeled yet. Storage SLA varies by access tier and read/write path; we use simplified read-path values.</p>
+
+    <div class="rp-footnote"><span class="accent">ⓘ</span> Designed availability, not a guarantee.</div>
+</div>

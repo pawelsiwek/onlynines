@@ -1,0 +1,51 @@
+@page "/stack/{Slug}"
+@rendermode InteractiveServer
+@inject StackStore Store
+@inject DatasetProvider Dataset
+
+<PageTitle>Saved assessment — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="assess-band">
+    <div class="assess-wrap">
+        @if (_notFound)
+        {
+            <div class="assess-header">
+                <span class="mono-eyebrow">// 404</span>
+                <h1>No such stack.</h1>
+                <p>This permalink doesn't exist — or its downtime budget ran out. <a class="accent" href="/assess">Run your own assessment →</a></p>
+            </div>
+        }
+        else if (_groups is not null)
+        {
+            <div class="assess-header">
+                <span class="mono-eyebrow">// saved assessment</span>
+                <h1>The nines, on the record.</h1>
+                <p>Re-scored against the current SLA dataset on every visit — this report doesn't go stale.</p>
+            </div>
+            <ReportView Groups="_groups" SavedSlug="@Slug" />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private IReadOnlyList<GroupScore>? _groups;
+    private bool _notFound;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var payload = await Store.GetAsync(Slug);
+        if (payload is null) { _notFound = true; return; }
+        try
+        {
+            _groups = Dataset.Scorer.ScoreEnvironment(ResourceGraphParser.Parse(payload));
+        }
+        catch
+        {
+            _notFound = true;
+        }
+    }
+}

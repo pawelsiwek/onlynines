@@ -1,0 +1,25 @@
+@page "/report/sample"
+@rendermode InteractiveServer
+@inject DatasetProvider Dataset
+
+<PageTitle>Sample report — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="page-shell">
+    <span class="mono-eyebrow">// sample report</span>
+    <h1 class="page-title">A typical Friday-afternoon environment.</h1>
+    <p class="page-sub">One resource group, eight resources, zero zone redundancy. Sound familiar?</p>
+
+    <ReportView Groups="_groups" />
+</div>
+
+@code {
+    private IReadOnlyList<GroupScore> _groups = Array.Empty<GroupScore>();
+
+    protected override void OnInitialized()
+    {
+        var resources = ResourceGraphParser.Parse(SampleData.Json);
+        _groups = Dataset.Scorer.ScoreEnvironment(resources);
+    }
+}

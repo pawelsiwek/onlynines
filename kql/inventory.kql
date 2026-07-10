@@ -1,0 +1,55 @@
+// OnlyNines inventory query — run via `az graph query` (JSON) or ARG Explorer (Download as CSV).
+// onlynines.app accepts both formats.
+// https://onlynines.app · privacy note: prefer inventory-paranoid.kql if names are sensitive;
+// the web app also hashes identifiers client-side before anything is uploaded.
+resources
+| where type in~ (
+    'microsoft.compute/virtualmachines',
+    'microsoft.compute/virtualmachinescalesets',
+    'microsoft.web/serverfarms',
+    'microsoft.web/sites',
+    'microsoft.dbforpostgresql/flexibleservers',
+    'microsoft.dbformysql/flexibleservers',
+    'microsoft.sql/servers/databases',
+    'microsoft.sql/managedinstances',
+    'microsoft.cache/redis',
+    'microsoft.storage/storageaccounts',
+    'microsoft.network/loadbalancers',
+    'microsoft.network/applicationgateways',
+    'microsoft.network/azurefirewalls',
+    'microsoft.network/frontdoors',
+    'microsoft.cdn/profiles',
+    'microsoft.containerservice/managedclusters',
+    'microsoft.documentdb/databaseaccounts',
+    'microsoft.servicebus/namespaces',
+    'microsoft.eventhub/namespaces',
+    'microsoft.keyvault/vaults',
+    'microsoft.apimanagement/service',
+    'microsoft.app/containerapps',
+    'microsoft.app/managedenvironments',
+    'microsoft.app/jobs',
+    'microsoft.app/agents',
+    'microsoft.containerregistry/registries',
+    'microsoft.search/searchservices',
+    'microsoft.cognitiveservices/accounts',
+    'microsoft.botservice/botservices',
+    'microsoft.datafactory/factories',
+    'microsoft.sql/servers',
+    'microsoft.insights/metricalerts',
+    'microsoft.insights/webtests',
+    'microsoft.network/networkwatchers'
+)
+| project
+    id,
+    name,
+    resourceGroup,
+    type = tolower(type),
+    location,
+    zones,
+    sku,
+    kind,
+    ha = properties.highAvailability.mode,
+    zr = properties.zoneRedundant,
+    tier = properties.sku.tier,
+    replication = sku.name,
+    capacity = sku.capacity

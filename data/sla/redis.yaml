@@ -1,0 +1,13 @@
+# DRAFT values — verify against current Microsoft SLA docs before trusting.
+service: Azure Cache for Redis
+resourceType: microsoft.cache/redis
+docsUrl: https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services
+lastVerified: "2026-07-10"
+variants:
+  - id: zone-redundant
+    match: { zr: true }
+    sla: 0.9995
+  - id: standard
+    match: {}
+    sla: 0.999
+ladder: [standard, zone-redundant]

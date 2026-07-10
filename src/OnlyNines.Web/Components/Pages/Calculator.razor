@@ -1,0 +1,108 @@
+@page "/calculator"
+@rendermode InteractiveServer
+@using System.Globalization
+@inject DatasetProvider Dataset
+@inject IJSRuntime Js
+
+<PageTitle>Composite SLA calculator — OnlyNines</PageTitle>
+
+<SiteNav />
+
+<div class="page-shell">
+    <span class="mono-eyebrow">// calculator</span>
+    <h1 class="page-title">Build a stack. Count the nines.</h1>
+    <p class="page-sub">Serial composition — every component is a hard dependency (worst case, on purpose).</p>
+
+    <div class="rp-header-card">
+        <div class="gauge-glow"></div>
+        <span class="gauge-label">COMPOSITE SLA</span>
+        <div class="rp-figure">@((Composite * 100).ToString("F3", CultureInfo.InvariantCulture))<span class="accent">%</span></div>
+        <div class="gauge-subfigure">
+            ≈ @Availability.DowntimeHoursPerYear(Composite).ToString("F1", CultureInfo.InvariantCulture) h/yr downtime budget
+            · @Availability.Nines(Composite).ToString("F1", CultureInfo.InvariantCulture) nines
+        </div>
+        <div class="gauge rp-gauge" data-gauge data-value="@GaugePos">
+            <div class="gauge-track">
+                <div class="gauge-fill" style="width:@(GaugePos)%"></div>
+                <div class="gauge-knob" style="left:@(GaugePos)%"></div>
+            </div>
+            <div class="gauge-scale">
+                <span>9</span><span>99</span><span>99.9</span><span>99.99</span><span>99.999</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="rp-card">
+        <div class="rp-card-heading">
+            <h2>Your stack</h2>
+            <span class="mono-muted">@_rows.Count component(s)</span>
+        </div>
+
+        @for (var i = 0; i < _rows.Count; i++)
+        {
+            var idx = i;
+            var row = _rows[idx];
+            var service = Dataset.Services[row.ServiceIndex];
+            <div class="calc-row">
+                <select class="calc-select" value="@row.ServiceIndex"
+                        @onchange="e => OnServiceChanged(idx, e)">
+                    @for (var s = 0; s < Dataset.Services.Count; s++)
+                    {
+                        <option value="@s">@Dataset.Services[s].Service</option>
+                    }
+                </select>
+                <select class="calc-select" value="@row.VariantId"
+                        @onchange="e => OnVariantChanged(idx, e)">
+                    @foreach (var v in service.Variants)
+                    {
+                        <option value="@v.Id">@v.Id — @((v.Sla * 100).ToString("F2", CultureInfo.InvariantCulture))%</option>
+                    }
+                </select>
+                <button class="calc-remove" title="Remove" @onclick="() => _rows.RemoveAt(idx)">✕</button>
+            </div>
+        }
+
+        <button class="btn-secondary calc-add" @onclick="AddRow">+ Add component</button>
+    </div>
+
+    <div class="rp-footnote"><span class="accent">ⓘ</span> Designed availability, not a guarantee.</div>
+</div>
+
+@code {
+    private sealed class Row
+    {
+        public int ServiceIndex { get; set; }
+        public string VariantId { get; set; } = "";
+    }
+
+    private readonly List<Row> _rows = new();
+
+    protected override void OnInitialized()
+    {
+        AddRow(); // start with one component so the page never looks dead
+    }
+
+    private void AddRow()
+    {
+        var service = Dataset.Services[0];
+        _rows.Add(new Row { ServiceIndex = 0, VariantId = service.Variants[^1].Id });
+    }
+
+    private void OnServiceChanged(int index, ChangeEventArgs e)
+    {
+        var serviceIndex = int.Parse((string)e.Value!);
+        _rows[index].ServiceIndex = serviceIndex;
+        _rows[index].VariantId = Dataset.Services[serviceIndex].Variants[^1].Id;
+    }
+
+    private void OnVariantChanged(int index, ChangeEventArgs e) =>
+        _rows[index].VariantId = (string)e.Value!;
+
+    private double Composite =>
+        Availability.Serial(_rows.Select(r =>
+            Dataset.Services[r.ServiceIndex].Variants.First(v => v.Id == r.VariantId).Sla));
+
+    private string GaugePos =>
+        (Math.Clamp((Availability.Nines(Composite) - 1) / 4.0, 0, 1) * 100)
+            .ToString("F1", CultureInfo.InvariantCulture);
+}

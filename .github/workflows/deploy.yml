@@ -1,0 +1,73 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+env:
+  RESOURCE_GROUP: rg-onlynines-prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - run: dotnet test tests/OnlyNines.Core.Tests -c Release
+      - run: dotnet publish src/OnlyNines.Web -c Release -o publish
+      # The web app locates data/sla by walking up from the content root — ship it alongside.
+      - run: cp -r data publish/data
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webapp
+          path: publish
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy infrastructure (bicep)
+        id: infra
+        run: |
+          out=$(az deployment group create \
+            --resource-group "$RESOURCE_GROUP" \
+            --template-file infra/main.bicep \
+            --parameters pgPassword="${{ secrets.PG_PASSWORD }}" \
+            --query 'properties.outputs' -o json)
+          echo "webAppName=$(echo "$out" | jq -r .webAppName.value)" >> "$GITHUB_OUTPUT"
+          echo "webAppHost=$(echo "$out" | jq -r .webAppHost.value)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: webapp
+          path: publish
+
+      - name: Deploy web app
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.infra.outputs.webAppName }}
+          package: publish
+
+      - name: Smoke test
+        run: |
+          sleep 20
+          curl -sSf --retry 5 --retry-delay 10 "https://${{ steps.infra.outputs.webAppHost }}/" > /dev/null
+          echo "Live at https://${{ steps.infra.outputs.webAppHost }}"
