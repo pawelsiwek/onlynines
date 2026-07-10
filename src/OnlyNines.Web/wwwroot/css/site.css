@@ -116,6 +116,10 @@ h1, h2, p { margin: 0; }
     background: #fff; border: 4px solid var(--azure); transform: translate(-50%, -50%);
     transition: left 1.5s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
+.gauge-interactive .gauge-track { cursor: pointer; touch-action: none; }
+.gauge-interactive .gauge-knob { cursor: grab; }
+.gauge-dragging .gauge-fill, .gauge-dragging .gauge-knob { transition: none; }
+.gauge-dragging .gauge-knob { cursor: grabbing; }
 .gauge-scale {
     display: flex; justify-content: space-between; margin-top: 12px;
     font-family: var(--mono); font-size: 11px; color: var(--on-dark-faint); font-variant-numeric: tabular-nums;
