@@ -1,0 +1,39 @@
+name: "Parser breakage"
+description: "The assess page choked on your Resource Graph export"
+title: "Parser: "
+labels: ["parser", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — broken exports are the most valuable bug reports we get.
+        **Redact anything sensitive** (resource names, subscription IDs) before pasting; the paranoid KQL variant does it for you.
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where did the export come from?
+      options:
+        - Cloud Shell one-liner (az graph query, JSON)
+        - Portal Resource Graph Explorer (Download as CSV)
+        - az CLI on my machine
+        - Other / modified query
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: What did the page say?
+      description: The error message shown under the paste box.
+      placeholder: "Could not parse that: ..."
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: First 2–3 lines of the export (redacted)
+      description: Header + one or two rows is usually enough. Hash or replace names/IDs.
+      render: text
+  - type: textarea
+    id: expected
+    attributes:
+      label: Anything else? (resource types involved, tenant quirks)

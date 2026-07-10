@@ -1,0 +1,36 @@
+name: "SLA dataset correction"
+description: "A value in data/sla is wrong, outdated, or missing a variant"
+title: "Dataset: "
+labels: ["dataset"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the canonical contribution — corrections with a source link get merged fast.
+        Even faster: send a PR editing the YAML in [`data/sla/`](https://github.com/pawelsiwek/onlynines/tree/main/data/sla).
+  - type: input
+    id: service
+    attributes:
+      label: Service
+      placeholder: "Azure App Service"
+    validations:
+      required: true
+  - type: input
+    id: current
+    attributes:
+      label: What we say today
+      placeholder: "zone-redundant: 99.99%"
+  - type: input
+    id: correct
+    attributes:
+      label: What it should be
+      placeholder: "99.95% for ..."
+    validations:
+      required: true
+  - type: input
+    id: sourceUrl
+    attributes:
+      label: Source link (SLA document / official docs)
+      placeholder: "https://www.microsoft.com/licensing/docs/..."
+    validations:
+      required: true

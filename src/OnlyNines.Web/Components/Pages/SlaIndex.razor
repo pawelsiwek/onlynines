@@ -11,7 +11,8 @@
     <h1 class="page-title">The dataset.</h1>
     <p class="page-sub">
         Every value has a source and a <code>lastVerified</code> date, and CI fails when one goes stale.
-        Wrong or outdated? <a class="accent" href="https://github.com/pawelsiwek/onlynines/tree/main/data/sla" target="_blank" rel="noopener">Send a PR</a> — it's one YAML file.
+        Wrong or outdated? <a class="accent" href="https://github.com/pawelsiwek/onlynines/tree/main/data/sla" target="_blank" rel="noopener">Send a PR</a> — it's one YAML file —
+        or <a class="accent" href="https://github.com/pawelsiwek/onlynines/issues/new?template=dataset-correction.yml" target="_blank" rel="noopener">file a correction</a>.
     </p>
 
     @foreach (var service in Dataset.Services.Where(s => !s.Ignore).OrderBy(s => s.Service))

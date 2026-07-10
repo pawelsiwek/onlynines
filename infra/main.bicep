@@ -27,6 +27,12 @@ param cfAnalyticsToken string = ''
 @description('Public URL pinged by the availability test')
 param publicUrl string = 'https://onlynines.app/'
 
+@description('Custom domains with App Service managed certificates. Requires DNS (A/CNAME + asuid TXT) to exist first — pass [] on virgin environments.')
+param customDomains array = [
+  'onlynines.app'
+  'www.onlynines.app'
+]
+
 // ---------- App Service (B1, single instance, single zone — on purpose) ----------
 resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: '${appName}-plan'
@@ -113,6 +119,35 @@ resource pgFirewallAzure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRule
     endIpAddress: '0.0.0.0'
   }
 }
+
+// ---------- Custom domains + managed certs (three-step dance, see ssl-bind.bicep) ----------
+resource hostBinding 'Microsoft.Web/sites/hostNameBindings@2023-12-01' = [for domain in customDomains: {
+  parent: web
+  name: domain
+  properties: {
+    siteName: web.name
+    hostNameType: 'Verified'
+  }
+}]
+
+resource managedCert 'Microsoft.Web/certificates@2023-12-01' = [for (domain, i) in customDomains: {
+  name: 'cert-${replace(domain, '.', '-')}'
+  location: location
+  properties: {
+    serverFarmId: plan.id
+    canonicalName: domain
+  }
+  dependsOn: [hostBinding[i]]
+}]
+
+module sslBind 'ssl-bind.bicep' = [for (domain, i) in customDomains: {
+  name: 'ssl-${replace(domain, '.', '-')}'
+  params: {
+    webAppName: web.name
+    hostname: domain
+    thumbprint: managedCert[i].properties.thumbprint
+  }
+}]
 
 // ---------- Observability: OTEL -> Azure Monitor (free tier covers this app 100x over) ----------
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {

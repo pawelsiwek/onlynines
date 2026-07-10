@@ -366,7 +366,10 @@ h1, h2, p { margin: 0; }
 .assess-error {
     background: #FFF4F0; border: 1px solid #FFD6C9; color: #C2431F; border-radius: 12px;
     padding: 14px 16px; font-size: 14px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
 }
+.assess-error-report { font-weight: 700; color: #C2431F; white-space: nowrap; }
+.assess-error-report:hover { color: var(--azure-deep); }
 
 .rp-header-card {
     position: relative; overflow: hidden; background: var(--navy); border-radius: 24px;

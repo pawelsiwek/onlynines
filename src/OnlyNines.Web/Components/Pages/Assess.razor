@@ -77,7 +77,10 @@
 
         @if (Error is not null)
         {
-            <div class="assess-error">@Error</div>
+            <div class="assess-error">
+                <span>@Error</span>
+                <a class="assess-error-report" href="@IssueUrl" target="_blank" rel="noopener">Report this →</a>
+            </div>
         }
 
         @if (Groups is not null)
@@ -135,6 +138,10 @@
     };
 
     private string CounterText => DetectedCount > 0 ? $"✓ {DetectedCount} resources detected" : "waiting for input";
+
+    private string IssueUrl =>
+        "https://github.com/pawelsiwek/onlynines/issues/new?template=parser-breakage.yml&title=" +
+        Uri.EscapeDataString("Parser: " + (Error is { Length: > 60 } e ? e[..60] + "…" : Error ?? ""));
 
     private void Detect()
     {

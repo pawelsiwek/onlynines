@@ -15,6 +15,9 @@
     <p><strong>Parallel sets (planned, opt-in).</strong> Resources marked as redundant compose as <code>1 − Π(1 − SLAᵢ)</code>. This is an <em>upper bound</em>: it assumes independent failures. Zone-redundant pairs share a region, a config, a deployment pipeline, and a 2 a.m. hotfix.</p>
     <p><strong>Unknown bucket.</strong> Anything we can't map to a dataset variant is listed, not skipped. A report that silently ignores half your environment is marketing.</p>
 
+    <h2>Availability ≠ durability (the S3 eleven-nines confusion)</h2>
+    <p>"But storage has eleven nines!" — that's <strong>durability</strong>: the promise your bytes survive. We count <strong>availability</strong>: the promise the endpoint answers. Azure Storage LRS has ~11 nines of durability and a 99.9% availability SLA at the same time — and your app's composite depends on the latter, because a perfectly durable blob behind a dead endpoint is still an outage.</p>
+
     <h2>What the numbers are NOT</h2>
     <p><strong>Not a financially-backed SLA.</strong> Microsoft's SLA is a refund policy, not a physics model.</p>
     <p><strong>Not observed uptime.</strong> Your monitoring knows what actually happened; we compute what the architecture permits.</p>
