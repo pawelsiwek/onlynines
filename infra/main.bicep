@@ -164,6 +164,9 @@ resource pgFirewallAzure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRule
 }
 
 // ---------- Custom domains + managed certs (three-step dance, see ssl-bind.bicep) ----------
+// @batchSize(1): deploy domains one at a time. Concurrent hostNameBinding/SSL updates
+// take a site-level lock and collide with "another operation in progress" (Conflict 59203).
+@batchSize(1)
 resource hostBinding 'Microsoft.Web/sites/hostNameBindings@2023-12-01' = [for domain in customDomains: {
   parent: web
   name: domain
@@ -173,8 +176,12 @@ resource hostBinding 'Microsoft.Web/sites/hostNameBindings@2023-12-01' = [for do
   }
 }]
 
+// Resource name MUST equal the canonical hostname: App Service auto-creates managed
+// certs named after the domain, so any other name collides on canonicalName (duplicate
+// certificate Conflict). Matching the name lets Bicep adopt the existing cert idempotently.
+@batchSize(1)
 resource managedCert 'Microsoft.Web/certificates@2023-12-01' = [for (domain, i) in customDomains: {
-  name: 'cert-${replace(domain, '.', '-')}'
+  name: domain
   location: location
   properties: {
     serverFarmId: plan.id
@@ -183,6 +190,7 @@ resource managedCert 'Microsoft.Web/certificates@2023-12-01' = [for (domain, i) 
   dependsOn: [hostBinding[i]]
 }]
 
+@batchSize(1)
 module sslBind 'ssl-bind.bicep' = [for (domain, i) in customDomains: {
   name: 'ssl-${replace(domain, '.', '-')}'
   params: {
