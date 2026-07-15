@@ -33,6 +33,44 @@ param customDomains array = [
   'www.onlynines.app'
 ]
 
+@description('Lock the origin so ONLY Cloudflare edge IPs reach App Service. Prod is permanently behind CF orange-cloud, so this defaults true — deploys keep the lockdown. A virgin/non-CF environment MUST pass restrictToCloudflare=false or it locks out all direct traffic and goes dark. See docs/cloudflare.md.')
+param restrictToCloudflare bool = true
+
+@description('Cloudflare edge IP ranges (IPv4 + IPv6). Refresh from https://www.cloudflare.com/ips/ — Cloudflare changes these occasionally.')
+param cloudflareIpRanges array = [
+  '173.245.48.0/20'
+  '103.21.244.0/22'
+  '103.22.200.0/22'
+  '103.31.4.0/22'
+  '141.101.64.0/18'
+  '108.162.192.0/18'
+  '190.93.240.0/20'
+  '188.114.96.0/20'
+  '197.234.240.0/22'
+  '198.41.128.0/17'
+  '162.158.0.0/15'
+  '104.16.0.0/13'
+  '104.24.0.0/14'
+  '172.64.0.0/13'
+  '131.0.72.0/22'
+  '2400:cb00::/32'
+  '2606:4700::/32'
+  '2803:f800::/32'
+  '2405:b500::/32'
+  '2405:8100::/32'
+  '2a06:98c0::/29'
+  '2c0f:f248::/32'
+]
+
+// Allow-list of Cloudflare ranges; anything unmatched is denied by ipSecurityRestrictionsDefaultAction.
+var cfIpRestrictions = [for (cidr, i) in cloudflareIpRanges: {
+  ipAddress: cidr
+  action: 'Allow'
+  priority: 100 + i
+  name: 'cloudflare-${i}'
+  description: 'Cloudflare edge range'
+}]
+
 // ---------- App Service (B1, single instance, single zone — on purpose) ----------
 resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: '${appName}-plan'
@@ -58,6 +96,11 @@ resource web 'Microsoft.Web/sites@2023-12-01' = {
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|8.0'
       alwaysOn: false // B1 penny-pinching; cold starts are content too
+      // Origin lockdown: when restrictToCloudflare is on, only CF edge IPs get in.
+      // SCM (Kudu) stays open so GitHub Actions can still deploy.
+      ipSecurityRestrictionsDefaultAction: restrictToCloudflare ? 'Deny' : 'Allow'
+      ipSecurityRestrictions: restrictToCloudflare ? cfIpRestrictions : []
+      scmIpSecurityRestrictionsUseMain: false
       appSettings: [
         {
           name: 'POSTGRES_CONNECTION'

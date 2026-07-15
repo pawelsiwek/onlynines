@@ -68,7 +68,9 @@ jobs:
           package: publish
 
       - name: Smoke test
+        # Origin is locked to Cloudflare (restrictToCloudflare) — the .azurewebsites.net
+        # host now 403s by design, so smoke-test through the public edge instead.
         run: |
           sleep 20
-          curl -sSf --retry 5 --retry-delay 10 "https://${{ steps.infra.outputs.webAppHost }}/" > /dev/null
-          echo "Live at https://${{ steps.infra.outputs.webAppHost }}"
+          curl -sSf --retry 5 --retry-delay 10 "https://onlynines.app/" > /dev/null
+          echo "Live at https://onlynines.app/"
