@@ -1,16 +1,41 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using OnlyNines.Web.Components;
 using OnlyNines.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// OTEL, vendor-neutral: Azure Monitor is just the current exporter. Swapping to any
-// OTLP backend later means changing THIS block only — instrumentation stays put.
-if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+// OTEL: both backends can be active simultaneously — set the env vars for whichever you want.
+var aiConnection = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+
+if (!string.IsNullOrEmpty(aiConnection) || !string.IsNullOrEmpty(otlpEndpoint))
 {
-    builder.Services.AddOpenTelemetry()
-        .UseAzureMonitor()
-        .WithMetrics(metrics => metrics.AddMeter(Telemetry.MeterName));
+    var otelBuilder = builder.Services.AddOpenTelemetry();
+
+    if (!string.IsNullOrEmpty(aiConnection))
+        otelBuilder.UseAzureMonitor();
+
+    if (!string.IsNullOrEmpty(otlpEndpoint))
+    {
+        builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter());
+        otelBuilder
+            .WithTracing(t => t
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddOtlpExporter())
+            .WithMetrics(m => m
+                .AddAspNetCoreInstrumentation()
+                .AddMeter(Telemetry.MeterName)
+                .AddOtlpExporter());
+    }
+    else
+    {
+        // Azure Monitor only — register the custom meter it doesn't know about
+        otelBuilder.WithMetrics(m => m.AddMeter(Telemetry.MeterName));
+    }
 }
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
